@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../localization/locale_cubit.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
@@ -46,25 +47,16 @@ class ServiceLocator {
     final firestore = FirebaseFirestore.instance;
 
     // 1. Auth Feature DI
-    authRemoteDataSource = AuthRemoteDataSourceImpl(
-      firebaseAuth: auth,
-      firestore: firestore,
-    );
-    authRepository = AuthRepositoryImpl(
-      remoteDataSource: authRemoteDataSource,
-    );
+    authRemoteDataSource = AuthRemoteDataSourceImpl(firebaseAuth: auth, firestore: firestore);
+    authRepository = AuthRepositoryImpl(remoteDataSource: authRemoteDataSource);
     loginUseCase = LoginUseCase(authRepository);
     registerUseCase = RegisterUseCase(authRepository);
     logoutUseCase = LogoutUseCase(authRepository);
     getCurrentUserUseCase = GetCurrentUserUseCase(authRepository);
 
     // 2. Chat Feature DI
-    chatRemoteDataSource = ChatRemoteDataSourceImpl(
-      firestore: firestore,
-    );
-    chatRepository = ChatRepositoryImpl(
-      remoteDataSource: chatRemoteDataSource,
-    );
+    chatRemoteDataSource = ChatRemoteDataSourceImpl(firestore: firestore);
+    chatRepository = ChatRepositoryImpl(remoteDataSource: chatRemoteDataSource);
     getAllUsersUseCase = GetAllUsersUseCase(chatRepository);
     getConversationsUseCase = GetConversationsUseCase(chatRepository);
     searchUserByEmailUseCase = SearchUserByEmailUseCase(chatRepository);
@@ -88,4 +80,6 @@ class ServiceLocator {
         getMessagesStreamUseCase: getMessagesStreamUseCase,
         sendMessageUseCase: sendMessageUseCase,
       );
+
+  static LocaleCubit get localeCubit => LocaleCubit();
 }

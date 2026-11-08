@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_strings.dart';
+import '../../../../core/localization/language_toggle_button.dart';
+import '../../../../core/localization/localization_extension.dart';
+import '../../../../core/routes/app_routes.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
+import '../widgets/auth_header.dart';
 import '../widgets/custom_text_field.dart';
-import '../../../chat/presentation/screens/home_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -19,7 +22,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
+  bool _obscure = true;
 
   @override
   void dispose() {
@@ -29,7 +32,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void _onRegisterPressed() {
+  void _register() {
     if (_formKey.currentState?.validate() ?? false) {
       context.read<AuthCubit>().register(
             name: _nameController.text.trim(),
@@ -43,28 +46,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.registerTitle),
+        title: Text(context.tr('registerTitle')),
+        actions: const [LanguageToggleButton()],
       ),
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
-          if (state is Authenticated) {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
-              (route) => false,
-            );
-          } else if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: AppColors.error,
-              ),
-            );
+          if (state is Authenticated) context.go(AppRoutes.home);
+          if (state is AuthError) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: AppColors.error));
           }
         },
         builder: (context, state) {
           final isLoading = state is AuthLoading;
-
           return SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -74,114 +67,45 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
-                        AppStrings.registerTitle,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        AppStrings.registerSubtitle,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-
-                      // Name Field
+                      AuthHeader(title: context.tr('registerTitle'), subtitle: context.tr('registerSubtitle')),
+                      const SizedBox(height: 28),
                       CustomTextField(
                         controller: _nameController,
-                        label: AppStrings.name,
+                        label: context.tr('name'),
                         prefixIcon: Icons.person_outline,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'يرجى إدخال الاسم';
-                          }
-                          return null;
-                        },
+                        validator: (v) => (v == null || v.trim().isEmpty) ? context.tr('nameRequired') : null,
                       ),
-                      const SizedBox(height: 16),
-
-                      // Email Field
+                      const SizedBox(height: 14),
                       CustomTextField(
                         controller: _emailController,
-                        label: AppStrings.email,
+                        label: context.tr('email'),
                         prefixIcon: Icons.email_outlined,
                         keyboardType: TextInputType.emailAddress,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'يرجى إدخال البريد الإلكتروني';
-                          }
-                          if (!value.contains('@')) {
-                            return 'البريد غير صالح';
-                          }
-                          return null;
-                        },
+                        validator: (v) => (v == null || !v.contains('@')) ? context.tr('invalidEmail') : null,
                       ),
-                      const SizedBox(height: 16),
-
-                      // Password Field
+                      const SizedBox(height: 14),
                       CustomTextField(
                         controller: _passwordController,
-                        label: AppStrings.password,
+                        label: context.tr('password'),
                         prefixIcon: Icons.lock_outline,
-                        isPassword: _obscurePassword,
+                        isPassword: _obscure,
                         suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscurePassword = !_obscurePassword;
-                            });
-                          },
+                          icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                          onPressed: () => setState(() => _obscure = !_obscure),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'يرجى إدخال كلمة المرور';
-                          }
-                          if (value.length < 6) {
-                            return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
-                          }
-                          return null;
-                        },
+                        validator: (v) => (v == null || v.length < 6) ? context.tr('passwordTooShort') : null,
                       ),
-                      const SizedBox(height: 28),
-
-                      // Submit Button
+                      const SizedBox(height: 24),
                       ElevatedButton(
-                        onPressed: isLoading ? null : _onRegisterPressed,
+                        onPressed: isLoading ? null : _register,
                         child: isLoading
-                            ? const SizedBox(
-                                height: 22,
-                                width: 22,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2.5,
-                                ),
-                              )
-                            : const Text(AppStrings.registerButton),
+                            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                            : Text(context.tr('registerButton')),
                       ),
-                      const SizedBox(height: 16),
-
-                      // Already have account
+                      const SizedBox(height: 14),
                       TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          AppStrings.haveAccount,
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        onPressed: () => context.pop(),
+                        child: Text(context.tr('haveAccount'), style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
                       ),
                     ],
                   ),

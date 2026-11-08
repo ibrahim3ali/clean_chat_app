@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_strings.dart';
+import '../../../../core/localization/language_toggle_button.dart';
+import '../../../../core/localization/localization_extension.dart';
+import '../../../../core/routes/app_routes.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
+import '../widgets/auth_header.dart';
 import '../widgets/custom_text_field.dart';
-import 'register_screen.dart';
-import '../../../chat/presentation/screens/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,7 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
+  bool _obscure = true;
 
   @override
   void dispose() {
@@ -28,7 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _onLoginPressed() {
+  void _login() {
     if (_formKey.currentState?.validate() ?? false) {
       context.read<AuthCubit>().login(
             email: _emailController.text.trim(),
@@ -40,153 +42,64 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: const [LanguageToggleButton()],
+      ),
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
-          if (state is Authenticated) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
-            );
-          } else if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: AppColors.error,
-              ),
-            );
+          if (state is Authenticated) context.go(AppRoutes.home);
+          if (state is AuthError) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: AppColors.error));
           }
         },
         builder: (context, state) {
           final isLoading = state is AuthLoading;
-
           return SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Form(
                   key: _formKey,
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Icon / Logo
-                      Container(
-                        height: 90,
-                        width: 90,
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.chat_bubble_outline_rounded,
-                          size: 45,
-                          color: AppColors.primary,
-                        ),
+                      AuthHeader(
+                        title: context.tr('loginTitle'),
+                        subtitle: context.tr('loginSubtitle'),
                       ),
-                      const SizedBox(height: 24),
-
-                      // Title
-                      const Text(
-                        AppStrings.loginTitle,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        AppStrings.loginSubtitle,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: 36),
-
-                      // Email Field
+                      const SizedBox(height: 32),
                       CustomTextField(
                         controller: _emailController,
-                        label: AppStrings.email,
+                        label: context.tr('email'),
                         prefixIcon: Icons.email_outlined,
                         keyboardType: TextInputType.emailAddress,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'يرجى إدخال البريد الإلكتروني';
-                          }
-                          if (!value.contains('@')) {
-                            return 'البريد الإلكتروني غير صالح';
-                          }
-                          return null;
-                        },
+                        validator: (v) => (v == null || !v.contains('@')) ? context.tr('invalidEmail') : null,
                       ),
                       const SizedBox(height: 16),
-
-                      // Password Field
                       CustomTextField(
                         controller: _passwordController,
-                        label: AppStrings.password,
+                        label: context.tr('password'),
                         prefixIcon: Icons.lock_outline,
-                        isPassword: _obscurePassword,
+                        isPassword: _obscure,
                         suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscurePassword = !_obscurePassword;
-                            });
-                          },
+                          icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                          onPressed: () => setState(() => _obscure = !_obscure),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'يرجى إدخال كلمة المرور';
-                          }
-                          if (value.length < 6) {
-                            return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
-                          }
-                          return null;
-                        },
+                        validator: (v) => (v == null || v.length < 6) ? context.tr('passwordTooShort') : null,
                       ),
-                      const SizedBox(height: 28),
-
-                      // Login Button
+                      const SizedBox(height: 24),
                       ElevatedButton(
-                        onPressed: isLoading ? null : _onLoginPressed,
+                        onPressed: isLoading ? null : _login,
                         child: isLoading
-                            ? const SizedBox(
-                                height: 22,
-                                width: 22,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2.5,
-                                ),
-                              )
-                            : const Text(AppStrings.loginButton),
+                            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                            : Text(context.tr('loginButton')),
                       ),
-                      const SizedBox(height: 20),
-
-                      // Switch to Register
+                      const SizedBox(height: 16),
                       TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const RegisterScreen(),
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          AppStrings.dontHaveAccount,
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        onPressed: () => context.push(AppRoutes.register),
+                        child: Text(context.tr('dontHaveAccount'), style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
                       ),
                     ],
                   ),
