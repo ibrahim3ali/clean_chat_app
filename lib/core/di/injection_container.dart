@@ -16,6 +16,7 @@ import '../../features/chat/domain/repositories/chat_repository.dart';
 import '../../features/chat/domain/usecases/get_all_users_usecase.dart';
 import '../../features/chat/domain/usecases/get_conversations_usecase.dart';
 import '../../features/chat/domain/usecases/get_messages_stream_usecase.dart';
+import '../../features/chat/domain/usecases/search_user_by_email_usecase.dart';
 import '../../features/chat/domain/usecases/send_message_usecase.dart';
 import '../../features/chat/presentation/cubit/chat_cubit.dart';
 import '../../features/chat/presentation/cubit/users_cubit.dart';
@@ -36,6 +37,7 @@ class ServiceLocator {
   static late final ChatRepository chatRepository;
   static late final GetAllUsersUseCase getAllUsersUseCase;
   static late final GetConversationsUseCase getConversationsUseCase;
+  static late final SearchUserByEmailUseCase searchUserByEmailUseCase;
   static late final GetMessagesStreamUseCase getMessagesStreamUseCase;
   static late final SendMessageUseCase sendMessageUseCase;
 
@@ -65,6 +67,7 @@ class ServiceLocator {
     );
     getAllUsersUseCase = GetAllUsersUseCase(chatRepository);
     getConversationsUseCase = GetConversationsUseCase(chatRepository);
+    searchUserByEmailUseCase = SearchUserByEmailUseCase(chatRepository);
     getMessagesStreamUseCase = GetMessagesStreamUseCase(chatRepository);
     sendMessageUseCase = SendMessageUseCase(chatRepository);
   }
@@ -78,6 +81,7 @@ class ServiceLocator {
 
   static UsersCubit get usersCubit => UsersCubit(
         getConversationsUseCase: getConversationsUseCase,
+        searchUserByEmailUseCase: searchUserByEmailUseCase,
       );
 
   static ChatCubit get chatCubit => ChatCubit(

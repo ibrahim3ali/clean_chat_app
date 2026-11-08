@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -22,6 +23,33 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  String get _chatId {
+    final uid1 = widget.currentUser.uid;
+    final uid2 = widget.otherUser.uid;
+    return (uid1.compareTo(uid2) < 0) ? '${uid1}_$uid2' : '${uid2}_$uid1';
+  }
+
+  Stream<bool> get _typingStream {
+    return FirebaseFirestore.instance
+        .collection('chats')
+        .doc(_chatId)
+        .snapshots()
+        .map((doc) {
+      final data = doc.data();
+      if (data == null) return false;
+      final typing = data['typing'] as Map<String, dynamic>?;
+      return typing?[widget.otherUser.uid] == true;
+    });
+  }
+
+  void _setTyping(bool isTyping) {
+    FirebaseFirestore.instance.collection('chats').doc(_chatId).set({
+      'typing': {
+        widget.currentUser.uid: isTyping,
+      },
+    }, SetOptions(merge: true));
+  }
+
   @override
   void initState() {
     super.initState();
@@ -31,7 +59,14 @@ class _ChatScreenState extends State<ChatScreen> {
         );
   }
 
+  @override
+  void dispose() {
+    _setTyping(false);
+    super.dispose();
+  }
+
   void _sendMessage(String text) {
+    _setTyping(false);
     context.read<ChatCubit>().sendMessage(
           currentUserId: widget.currentUser.uid,
           currentUserName: widget.currentUser.name,
@@ -73,14 +108,30 @@ class _ChatScreenState extends State<ChatScreen> {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                Text(
-                  widget.otherUser.isOnline ? 'متصل الآن' : 'غير متصل',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: widget.otherUser.isOnline
-                        ? Colors.green
-                        : AppColors.textMuted,
-                  ),
+                StreamBuilder<bool>(
+                  stream: _typingStream,
+                  builder: (context, snapshot) {
+                    final isTyping = snapshot.data == true;
+                    if (isTyping) {
+                      return const Text(
+                        'يكتب الآن...',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                      );
+                    }
+                    return Text(
+                      widget.otherUser.isOnline ? 'متصل الآن' : 'غير متصل',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: widget.otherUser.isOnline
+                            ? Colors.green
+                            : AppColors.textMuted,
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -148,8 +199,62 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
           ),
+          StreamBuilder<bool>(
+            stream: _typingStream,
+            builder: (context, snapshot) {
+              final isTyping = snapshot.data == true;
+              if (!isTyping) return const SizedBox.shrink();
+              return Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(
+                          width: 12,
+                          height: 12,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${widget.otherUser.name} يكتب الآن...',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
           MessageInputField(
             onSendMessage: _sendMessage,
+            onTypingChanged: _setTyping,
           ),
         ],
       ),

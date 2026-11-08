@@ -20,6 +20,11 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
+  Future<UserEntity?> getUserByEmail(String email) {
+    return remoteDataSource.getUserByEmail(email);
+  }
+
+  @override
   Stream<List<MessageEntity>> getMessagesStream({
     required String currentUserId,
     required String otherUserId,

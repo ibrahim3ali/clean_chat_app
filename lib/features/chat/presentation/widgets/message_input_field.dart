@@ -1,13 +1,16 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
 
 class MessageInputField extends StatefulWidget {
   final Function(String) onSendMessage;
+  final ValueChanged<bool>? onTypingChanged;
 
   const MessageInputField({
     super.key,
     required this.onSendMessage,
+    this.onTypingChanged,
   });
 
   @override
@@ -16,10 +19,41 @@ class MessageInputField extends StatefulWidget {
 
 class _MessageInputFieldState extends State<MessageInputField> {
   final _controller = TextEditingController();
+  Timer? _typingTimer;
+  bool _isTyping = false;
+
+  void _onTextChanged(String text) {
+    if (widget.onTypingChanged == null) return;
+
+    if (text.trim().isNotEmpty) {
+      if (!_isTyping) {
+        _isTyping = true;
+        widget.onTypingChanged!(true);
+      }
+      _typingTimer?.cancel();
+      _typingTimer = Timer(const Duration(seconds: 2), () {
+        if (mounted && _isTyping) {
+          _isTyping = false;
+          widget.onTypingChanged!(false);
+        }
+      });
+    } else {
+      if (_isTyping) {
+        _isTyping = false;
+        _typingTimer?.cancel();
+        widget.onTypingChanged!(false);
+      }
+    }
+  }
 
   void _send() {
     final text = _controller.text.trim();
     if (text.isNotEmpty) {
+      _typingTimer?.cancel();
+      if (_isTyping) {
+        _isTyping = false;
+        widget.onTypingChanged?.call(false);
+      }
       widget.onSendMessage(text);
       _controller.clear();
     }
@@ -27,6 +61,10 @@ class _MessageInputFieldState extends State<MessageInputField> {
 
   @override
   void dispose() {
+    _typingTimer?.cancel();
+    if (_isTyping) {
+      widget.onTypingChanged?.call(false);
+    }
     _controller.dispose();
     super.dispose();
   }
@@ -57,6 +95,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
                 ),
                 child: TextField(
                   controller: _controller,
+                  onChanged: _onTextChanged,
                   textInputAction: TextInputAction.send,
                   onSubmitted: (_) => _send(),
                   decoration: const InputDecoration(

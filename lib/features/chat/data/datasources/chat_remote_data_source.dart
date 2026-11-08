@@ -10,6 +10,8 @@ abstract class ChatRemoteDataSource {
 
   Stream<List<ChatConversationModel>> getConversationsStream(String currentUserId);
 
+  Future<UserModel?> getUserByEmail(String email);
+
   Stream<List<MessageModel>> getMessagesStream({
     required String currentUserId,
     required String otherUserId,
@@ -56,20 +58,21 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         if (user.uid == currentUserId) continue;
 
         final chatData = chatsMap[user.uid];
-        String lastMsg = '';
-        DateTime? lastTime;
-        String lastSender = '';
+        // Only include users who have an actual active chat with messages
+        if (chatData == null) continue;
 
-        if (chatData != null) {
-          lastMsg = chatData['lastMessage'] as String? ?? '';
-          final rawTime = chatData['lastUpdated'];
-          if (rawTime is Timestamp) {
-            lastTime = rawTime.toDate();
-          } else if (rawTime is String) {
-            lastTime = DateTime.tryParse(rawTime);
-          }
-          lastSender = chatData['lastSenderId'] as String? ?? '';
+        final lastMsg = (chatData['lastMessage'] as String? ?? '').trim();
+        if (lastMsg.isEmpty) continue;
+
+        DateTime? lastTime;
+        final rawTime = chatData['lastUpdated'];
+        if (rawTime is Timestamp) {
+          lastTime = rawTime.toDate();
+        } else if (rawTime is String) {
+          lastTime = DateTime.tryParse(rawTime);
         }
+
+        final lastSender = chatData['lastSenderId'] as String? ?? '';
 
         list.add(ChatConversationModel(
           otherUserId: user.uid,
@@ -141,6 +144,36 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     };
 
     return controller.stream;
+  }
+
+  @override
+  Future<UserModel?> getUserByEmail(String email) async {
+    try {
+      final cleanEmail = email.trim().toLowerCase();
+
+      // 1. Search lowercase
+      var query = await firestore
+          .collection('users')
+          .where('email', isEqualTo: cleanEmail)
+          .limit(1)
+          .get();
+
+      // 2. Fallback to trimmed search
+      if (query.docs.isEmpty) {
+        query = await firestore
+            .collection('users')
+            .where('email', isEqualTo: email.trim())
+            .limit(1)
+            .get();
+      }
+
+      if (query.docs.isEmpty) return null;
+
+      final doc = query.docs.first;
+      return UserModel.fromMap(doc.data(), doc.id);
+    } catch (e) {
+      throw ServerException('فشل في البحث عن المستخدم: $e');
+    }
   }
 
   @override

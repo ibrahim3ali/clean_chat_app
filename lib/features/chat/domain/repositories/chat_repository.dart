@@ -7,6 +7,8 @@ abstract class ChatRepository {
 
   Stream<List<ChatConversationEntity>> getConversationsStream(String currentUserId);
 
+  Future<UserEntity?> getUserByEmail(String email);
+
   Stream<List<MessageEntity>> getMessagesStream({
     required String currentUserId,
     required String otherUserId,

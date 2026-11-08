@@ -31,7 +31,6 @@ class UserListTile extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -41,9 +40,14 @@ class UserListTile extends StatelessWidget {
           ),
         ],
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        onTap: onTap,
+      child: Material(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        clipBehavior: Clip.antiAlias,
+        child: ListTile(
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          onTap: onTap,
         leading: Stack(
           children: [
             CircleAvatar(
@@ -118,6 +122,7 @@ class UserListTile extends StatelessWidget {
           color: AppColors.textMuted,
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
