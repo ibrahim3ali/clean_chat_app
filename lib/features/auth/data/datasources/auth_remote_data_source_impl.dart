@@ -1,9 +1,8 @@
-import 'package:clean_chat_app/core/errors/exceptions.dart';
-import 'package:clean_chat_app/core/utils/firebase_error_mapper.dart';
-import 'package:clean_chat_app/features/auth/data/datasources/auth_remote_data_source.dart';
-import 'package:clean_chat_app/features/auth/data/models/user_model.dart';
+import 'package:clean_chat_app/core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import '../../data.dart';
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final FirebaseAuth firebaseAuth;
@@ -15,18 +14,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   });
 
   @override
-  Future<UserModel> login({required String email, required String password}) async {
+  Future<UserModel> login({
+    required String email,
+    required String password,
+  }) async {
     try {
       final credential = await firebaseAuth.signInWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
       final user = credential.user;
-      if (user == null) throw const AuthException('فشل في العثور على بيانات المستخدم');
+      if (user == null)
+        throw const AuthException('فشل في العثور على بيانات المستخدم');
 
       final doc = await firestore.collection('users').doc(user.uid).get();
       if (doc.exists && doc.data() != null) {
-        await firestore.collection('users').doc(user.uid).update({'isOnline': true});
+        await firestore.collection('users').doc(user.uid).update({
+          'isOnline': true,
+        });
         return UserModel.fromMap(doc.data()!, user.uid);
       }
       final newUser = UserModel(
@@ -81,7 +86,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final currentUid = firebaseAuth.currentUser?.uid;
       if (currentUid != null) {
-        await firestore.collection('users').doc(currentUid).update({'isOnline': false});
+        await firestore.collection('users').doc(currentUid).update({
+          'isOnline': false,
+        });
       }
       await firebaseAuth.signOut();
     } catch (e) {

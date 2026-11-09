@@ -1,8 +1,7 @@
+import 'package:clean_chat_app/core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../features/auth/domain/entities/user_entity.dart';
-import '../routes/app_router.dart';
-import '../routes/app_routes.dart';
-import 'notification_payload.dart';
+
+import '../../features/auth/domain/entities.dart';
 
 class NotificationNavigator {
   NotificationNavigator._();
@@ -18,7 +17,10 @@ class NotificationNavigator {
 
     final currentUser = UserEntity(
       uid: firebaseUser.uid,
-      name: firebaseUser.displayName ?? firebaseUser.email?.split('@').first ?? '',
+      name:
+          firebaseUser.displayName ??
+          firebaseUser.email?.split('@').first ??
+          '',
       email: firebaseUser.email ?? '',
       isOnline: true,
     );
@@ -27,10 +29,7 @@ class NotificationNavigator {
 
     AppRouter.router.push(
       AppRoutes.chat,
-      extra: ChatRouteExtra(
-        currentUser: currentUser,
-        otherUser: otherUser,
-      ),
+      extra: ChatRouteExtra(currentUser: currentUser, otherUser: otherUser),
     );
   }
 }

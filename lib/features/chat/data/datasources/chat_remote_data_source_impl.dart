@@ -1,11 +1,9 @@
-import 'package:clean_chat_app/core/errors/exceptions.dart';
-import 'package:clean_chat_app/core/notifications/fcm_v1_sender_service.dart';
-import 'package:clean_chat_app/features/auth/data/models/user_model.dart';
-import 'package:clean_chat_app/features/chat/data/datasources/chat_remote_data_source.dart';
-import 'package:clean_chat_app/features/chat/data/datasources/conversations_stream_handler.dart';
-import 'package:clean_chat_app/features/chat/data/models/chat_conversation_model.dart';
-import 'package:clean_chat_app/features/chat/data/models/message_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../../../../core/errors.dart';
+import '../../../../core/notifications.dart';
+import '../../../auth/data/models.dart';
+import '../../data.dart';
 
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   final FirebaseFirestore firestore;

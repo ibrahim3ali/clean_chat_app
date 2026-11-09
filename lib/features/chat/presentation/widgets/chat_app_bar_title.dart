@@ -1,8 +1,8 @@
+import 'package:clean_chat_app/core/localization.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/localization/localization_extension.dart';
-import '../../../auth/domain/entities/user_entity.dart';
+import '../../../../core/constants.dart';
+import '../../../auth.dart';
 
 class ChatAppBarTitle extends StatelessWidget {
   final UserEntity otherUser;

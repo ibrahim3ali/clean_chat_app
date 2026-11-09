@@ -1,7 +1,6 @@
+import 'package:clean_chat_app/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../constants/app_colors.dart';
-import 'locale_cubit.dart';
 
 class LanguageToggleButton extends StatelessWidget {
   final Color? color;
@@ -15,7 +14,11 @@ class LanguageToggleButton extends StatelessWidget {
         final isArabic = locale.languageCode == 'ar';
         return TextButton.icon(
           onPressed: () => context.read<LocaleCubit>().toggleLocale(),
-          icon: Icon(Icons.language_rounded, size: 20, color: color ?? AppColors.primary),
+          icon: Icon(
+            Icons.language_rounded,
+            size: 20,
+            color: color ?? AppColors.primary,
+          ),
           label: Text(
             isArabic ? 'English' : 'العربية',
             style: TextStyle(

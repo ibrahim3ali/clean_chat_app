@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/localization/localization_extension.dart';
+import '../../../../core.dart';
+
+
 
 class LogoutDialog extends StatelessWidget {
   final VoidCallback onConfirm;

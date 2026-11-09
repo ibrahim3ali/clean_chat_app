@@ -1,5 +1,5 @@
 import '../entities/user_entity.dart';
-import '../auth_repository.dart';
+import '../repositories/auth_repository.dart';
 
 class GetCurrentUserUseCase {
   final AuthRepository repository;

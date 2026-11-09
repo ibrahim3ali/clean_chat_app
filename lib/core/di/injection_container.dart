@@ -1,30 +1,7 @@
+import 'package:clean_chat_app/core.dart';
+import 'package:clean_chat_app/features.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-import '../../features/auth/data/datasources/auth_remote_data_source_impl.dart';
-import '../../features/chat/data/datasources/chat_remote_data_source_impl.dart';
-import '../localization/locale_cubit.dart';
-import '../notifications/in_app_notification_watcher.dart';
-import '../notifications/notification_service.dart';
-import '../../features/auth/data/datasources/auth_remote_data_source.dart';
-import '../../features/auth/data/repositories/auth_repository_impl.dart';
-import '../../features/auth/domain/auth_repository.dart';
-import '../../features/auth/domain/usecases/get_current_user_usecase.dart';
-import '../../features/auth/domain/usecases/login_usecase.dart';
-import '../../features/auth/domain/usecases/logout_usecase.dart';
-import '../../features/auth/domain/usecases/register_usecase.dart';
-import '../../features/auth/presentation/cubit/auth_cubit.dart';
-
-import '../../features/chat/data/datasources/chat_remote_data_source.dart';
-import '../../features/chat/data/repositories/chat_repository_impl.dart';
-import '../../features/chat/domain/repositories/chat_repository.dart';
-import '../../features/chat/domain/usecases/get_all_users_usecase.dart';
-import '../../features/chat/domain/usecases/get_conversations_usecase.dart';
-import '../../features/chat/domain/usecases/get_messages_stream_usecase.dart';
-import '../../features/chat/domain/usecases/search_user_by_email_usecase.dart';
-import '../../features/chat/domain/usecases/send_message_usecase.dart';
-import '../../features/chat/presentation/cubit/chat_cubit.dart';
-import '../../features/chat/presentation/cubit/users_cubit.dart';
 
 class ServiceLocator {
   ServiceLocator._();
@@ -59,7 +36,10 @@ class ServiceLocator {
     inAppNotificationWatcher = InAppNotificationWatcher(firestore: firestore);
 
     // 1. Auth Feature DI
-    authRemoteDataSource = AuthRemoteDataSourceImpl(firebaseAuth: auth, firestore: firestore);
+    authRemoteDataSource = AuthRemoteDataSourceImpl(
+      firebaseAuth: auth,
+      firestore: firestore,
+    );
     authRepository = AuthRepositoryImpl(remoteDataSource: authRemoteDataSource);
     loginUseCase = LoginUseCase(authRepository);
     registerUseCase = RegisterUseCase(authRepository);
@@ -77,21 +57,21 @@ class ServiceLocator {
   }
 
   static AuthCubit get authCubit => AuthCubit(
-        loginUseCase: loginUseCase,
-        registerUseCase: registerUseCase,
-        logoutUseCase: logoutUseCase,
-        getCurrentUserUseCase: getCurrentUserUseCase,
-      );
+    loginUseCase: loginUseCase,
+    registerUseCase: registerUseCase,
+    logoutUseCase: logoutUseCase,
+    getCurrentUserUseCase: getCurrentUserUseCase,
+  );
 
   static UsersCubit get usersCubit => UsersCubit(
-        getConversationsUseCase: getConversationsUseCase,
-        searchUserByEmailUseCase: searchUserByEmailUseCase,
-      );
+    getConversationsUseCase: getConversationsUseCase,
+    searchUserByEmailUseCase: searchUserByEmailUseCase,
+  );
 
   static ChatCubit get chatCubit => ChatCubit(
-        getMessagesStreamUseCase: getMessagesStreamUseCase,
-        sendMessageUseCase: sendMessageUseCase,
-      );
+    getMessagesStreamUseCase: getMessagesStreamUseCase,
+    sendMessageUseCase: sendMessageUseCase,
+  );
 
   static LocaleCubit get localeCubit => LocaleCubit();
 }

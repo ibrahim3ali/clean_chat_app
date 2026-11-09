@@ -1,11 +1,8 @@
+import 'package:clean_chat_app/core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/auth/presentation/screens/login_screen.dart';
-import '../../features/auth/presentation/screens/register_screen.dart';
-import '../../features/chat/presentation/screens/chat_screen.dart';
-import '../../features/chat/presentation/screens/home_screen.dart';
-import 'app_routes.dart';
+import '../../features.dart';
 
 class AppRouter {
   AppRouter._();

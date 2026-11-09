@@ -2,14 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/localization/language_toggle_button.dart';
-import '../../../../core/localization/localization_extension.dart';
-import '../../../../core/routes/app_routes.dart';
-import '../cubit/auth_cubit.dart';
-import '../cubit/auth_state.dart';
-import '../widgets/auth_header.dart';
-import '../widgets/custom_text_field.dart';
+import '../../../../core.dart';
+import '../../presentation.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

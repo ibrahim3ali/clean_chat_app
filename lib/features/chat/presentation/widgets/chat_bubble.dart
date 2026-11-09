@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/utils/date_formatter.dart';
+import '../../../../core.dart';
 import '../../domain/entities/message_entity.dart';
 
 class ChatBubble extends StatelessWidget {

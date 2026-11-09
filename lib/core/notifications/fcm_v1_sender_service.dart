@@ -1,6 +1,7 @@
 import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:http/http.dart' as http;
@@ -16,12 +17,14 @@ class FcmV1SenderService {
   ];
 
   FcmV1SenderService({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   Future<String?> _getAccessToken() async {
     if (_cachedAccessToken != null &&
         _tokenExpiry != null &&
-        DateTime.now().isBefore(_tokenExpiry!.subtract(const Duration(minutes: 5)))) {
+        DateTime.now().isBefore(
+          _tokenExpiry!.subtract(const Duration(minutes: 5)),
+        )) {
       return _cachedAccessToken;
     }
 
@@ -30,22 +33,32 @@ class FcmV1SenderService {
 
       // 1. Try reading from Firestore config/fcm first (remote dynamic config)
       try {
-        final configDoc = await _firestore.collection('config').doc('fcm').get();
+        final configDoc = await _firestore
+            .collection('config')
+            .doc('fcm')
+            .get();
         if (configDoc.exists && configDoc.data() != null) {
           accountJson = configDoc.data()!;
         }
       } catch (_) {}
 
       // 2. Fallback to local asset
-      if (accountJson == null || accountJson['private_key'] == null || (accountJson['private_key'] as String).isEmpty) {
-        final assetString = await rootBundle.loadString('assets/service_account.json');
+      if (accountJson == null ||
+          accountJson['private_key'] == null ||
+          (accountJson['private_key'] as String).isEmpty) {
+        final assetString = await rootBundle.loadString(
+          'assets/service_account.json',
+        );
         final parsed = jsonDecode(assetString) as Map<String, dynamic>;
-        if (parsed['private_key'] != null && (parsed['private_key'] as String).isNotEmpty) {
+        if (parsed['private_key'] != null &&
+            (parsed['private_key'] as String).isNotEmpty) {
           accountJson = parsed;
         }
       }
 
-      if (accountJson == null || accountJson['private_key'] == null || (accountJson['private_key'] as String).isEmpty) {
+      if (accountJson == null ||
+          accountJson['private_key'] == null ||
+          (accountJson['private_key'] as String).isEmpty) {
         debugPrint('[FCM Sender] Service account private_key not configured.');
         return null;
       }
@@ -70,7 +83,10 @@ class FcmV1SenderService {
     required String messageText,
   }) async {
     try {
-      final userDoc = await _firestore.collection('users').doc(receiverId).get();
+      final userDoc = await _firestore
+          .collection('users')
+          .doc(receiverId)
+          .get();
       final targetToken = userDoc.data()?['fcmToken'] as String?;
       if (targetToken == null || targetToken.isEmpty) {
         debugPrint('[FCM Sender] Receiver $receiverId has no FCM token saved.');
@@ -80,7 +96,8 @@ class FcmV1SenderService {
       final accessToken = await _getAccessToken();
       if (accessToken == null) return;
 
-      final url = 'https://fcm.googleapis.com/v1/projects/$_projectId/messages:send';
+      final url =
+          'https://fcm.googleapis.com/v1/projects/$_projectId/messages:send';
       final body = {
         'message': {
           'token': targetToken,
@@ -109,7 +126,9 @@ class FcmV1SenderService {
         },
         body: jsonEncode(body),
       );
-      debugPrint('[FCM Sender] Sent push to $receiverId: ${response.statusCode}');
+      debugPrint(
+        '[FCM Sender] Sent push to $receiverId: ${response.statusCode}',
+      );
     } catch (e) {
       debugPrint('[FCM Sender] Failed to send push notification: $e');
     }

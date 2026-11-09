@@ -2,15 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/notifications/in_app_notification_watcher.dart';
-import '../../../auth/domain/entities/user_entity.dart';
-import '../cubit/chat_cubit.dart';
-import '../cubit/chat_state.dart';
-import '../widgets/chat_app_bar_title.dart';
-import '../widgets/chat_empty_messages_state.dart';
-import '../widgets/chat_messages_list.dart';
-import '../widgets/message_input_field.dart';
+import '../../../../core/constants.dart';
+import '../../../../core/notifications.dart';
+import '../../../auth/domain.dart';
+import '../../presentation.dart';
 
 class ChatScreen extends StatefulWidget {
   final UserEntity currentUser;

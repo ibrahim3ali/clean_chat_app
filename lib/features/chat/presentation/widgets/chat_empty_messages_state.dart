@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/localization/localization_extension.dart';
+import '../../../../core.dart';
 
 class ChatEmptyMessagesState extends StatelessWidget {
   const ChatEmptyMessagesState({super.key});

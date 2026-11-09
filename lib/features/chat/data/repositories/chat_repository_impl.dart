@@ -1,8 +1,8 @@
-import '../../../auth/domain/entities/user_entity.dart';
-import '../../domain/entities/chat_conversation_entity.dart';
-import '../../domain/entities/message_entity.dart';
-import '../../domain/repositories/chat_repository.dart';
-import '../datasources/chat_remote_data_source.dart';
+
+
+import '../../../auth.dart';
+import '../../data.dart';
+import '../../domain.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
   final ChatRemoteDataSource remoteDataSource;
