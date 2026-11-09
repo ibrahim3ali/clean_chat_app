@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../core/errors/exceptions.dart';
+import '../../../../core/notifications/fcm_v1_sender_service.dart';
 import '../../../auth/data/models/user_model.dart';
 import '../models/chat_conversation_model.dart';
 import '../models/message_model.dart';
@@ -16,9 +17,13 @@ abstract class ChatRemoteDataSource {
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   final FirebaseFirestore firestore;
   final ConversationsStreamHandler _conversationsHandler;
+  final FcmV1SenderService _fcmSender;
 
-  ChatRemoteDataSourceImpl({required this.firestore})
-      : _conversationsHandler = ConversationsStreamHandler(firestore: firestore);
+  ChatRemoteDataSourceImpl({
+    required this.firestore,
+    FcmV1SenderService? fcmSender,
+  })  : _conversationsHandler = ConversationsStreamHandler(firestore: firestore),
+        _fcmSender = fcmSender ?? FcmV1SenderService(firestore: firestore);
 
   String _getChatId(String uid1, String uid2) =>
       (uid1.compareTo(uid2) < 0) ? '${uid1}_$uid2' : '${uid2}_$uid1';
@@ -85,6 +90,14 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         'lastSenderId': currentUserId,
         'participants': [currentUserId, receiverId],
       }, SetOptions(merge: true));
+
+      _fcmSender.sendPushNotification(
+        receiverId: receiverId,
+        senderId: currentUserId,
+        senderName: currentUserName,
+        senderEmail: '',
+        messageText: text.trim(),
+      );
     } catch (e) {
       throw ServerException('فشل في إرسال الرسالة: $e');
     }

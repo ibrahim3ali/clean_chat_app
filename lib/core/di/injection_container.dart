@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../localization/locale_cubit.dart';
+import '../notifications/in_app_notification_watcher.dart';
+import '../notifications/notification_service.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
@@ -42,9 +44,17 @@ class ServiceLocator {
   static late final GetMessagesStreamUseCase getMessagesStreamUseCase;
   static late final SendMessageUseCase sendMessageUseCase;
 
+  // Notifications
+  static late final NotificationService notificationService;
+  static late final InAppNotificationWatcher inAppNotificationWatcher;
+
   static void init() {
     final auth = FirebaseAuth.instance;
     final firestore = FirebaseFirestore.instance;
+
+    // 0. Notifications DI
+    notificationService = NotificationService(firestore: firestore);
+    inAppNotificationWatcher = InAppNotificationWatcher(firestore: firestore);
 
     // 1. Auth Feature DI
     authRemoteDataSource = AuthRemoteDataSourceImpl(firebaseAuth: auth, firestore: firestore);

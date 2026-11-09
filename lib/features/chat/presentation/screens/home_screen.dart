@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/di/injection_container.dart';
 import '../../../../core/localization/language_toggle_button.dart';
 import '../../../../core/localization/localization_extension.dart';
 import '../../../../core/routes/app_routes.dart';
@@ -28,7 +29,10 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     final authState = context.read<AuthCubit>().state;
     if (authState is Authenticated) {
-      context.read<UsersCubit>().loadConversations(currentUserId: authState.user.uid);
+      final uid = authState.user.uid;
+      context.read<UsersCubit>().loadConversations(currentUserId: uid);
+      ServiceLocator.notificationService.saveTokenToFirestore(uid);
+      ServiceLocator.inAppNotificationWatcher.startWatching(uid);
     }
   }
 
@@ -36,7 +40,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
-        if (state is Unauthenticated) context.go(AppRoutes.login);
+        if (state is Unauthenticated) {
+          ServiceLocator.inAppNotificationWatcher.stopWatching();
+          context.go(AppRoutes.login);
+        }
       },
       child: Scaffold(
         appBar: AppBar(

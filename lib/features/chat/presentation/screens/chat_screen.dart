@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/notifications/in_app_notification_watcher.dart';
 import '../../../auth/domain/entities/user_entity.dart';
 import '../cubit/chat_cubit.dart';
 import '../cubit/chat_state.dart';
@@ -42,6 +43,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    InAppNotificationWatcher.activeChatPartnerId = widget.otherUser.uid;
     context.read<ChatCubit>().listenToMessages(
           currentUserId: widget.currentUser.uid,
           otherUserId: widget.otherUser.uid,
@@ -50,6 +52,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
+    InAppNotificationWatcher.activeChatPartnerId = null;
     _setTyping(false);
     super.dispose();
   }
