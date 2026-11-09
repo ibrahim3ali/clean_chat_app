@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../domain/entities/message_entity.dart';
 
 class MessageModel extends MessageEntity {
@@ -13,7 +14,7 @@ class MessageModel extends MessageEntity {
 
   factory MessageModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>? ?? {};
-    
+
     DateTime parsedTime;
     final rawTime = data['timestamp'];
     if (rawTime is Timestamp) {

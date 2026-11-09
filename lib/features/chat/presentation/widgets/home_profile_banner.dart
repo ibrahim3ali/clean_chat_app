@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../auth/domain/entities/user_entity.dart';
 
@@ -34,7 +35,9 @@ class HomeProfileBanner extends StatelessWidget {
             radius: 28,
             backgroundColor: Colors.white.withValues(alpha: 0.25),
             child: Text(
-              user.name.isNotEmpty ? user.name.characters.first.toUpperCase() : 'U',
+              user.name.isNotEmpty
+                  ? user.name.characters.first.toUpperCase()
+                  : 'U',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 22,
@@ -60,10 +63,7 @@ class HomeProfileBanner extends StatelessWidget {
                   user.email,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 13,
-                  ),
+                  style: const TextStyle(color: Colors.white70, fontSize: 13),
                 ),
               ],
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/localization/localization_extension.dart';
 import '../../../../core/utils/date_formatter.dart';
@@ -22,7 +23,9 @@ class UserListTile extends StatelessWidget {
     final hasMessage = conversation.lastMessage.isNotEmpty;
     final isMe = conversation.lastSenderId == currentUserId;
     final subtitle = hasMessage
-        ? (isMe ? '${context.tr('you')}: ${conversation.lastMessage}' : conversation.lastMessage)
+        ? (isMe
+              ? '${context.tr('you')}: ${conversation.lastMessage}'
+              : conversation.lastMessage)
         : context.tr('noMessagesTap');
 
     return Container(
@@ -42,7 +45,10 @@ class UserListTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         clipBehavior: Clip.antiAlias,
         child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
           onTap: onTap,
           leading: ChatUserAvatar(
             name: conversation.otherUserName,
@@ -55,13 +61,21 @@ class UserListTile extends StatelessWidget {
                   conversation.otherUserName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textPrimary),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
               ),
               if (conversation.lastMessageTime != null)
                 Text(
                   DateFormatter.formatChatDate(conversation.lastMessageTime!),
-                  style: const TextStyle(fontSize: 11, color: AppColors.textMuted, fontWeight: FontWeight.w500),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: AppColors.textMuted,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
             ],
           ),
@@ -74,11 +88,17 @@ class UserListTile extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: hasMessage ? FontWeight.w500 : FontWeight.normal,
-                color: hasMessage ? AppColors.textSecondary : AppColors.textMuted,
+                color: hasMessage
+                    ? AppColors.textSecondary
+                    : AppColors.textMuted,
               ),
             ),
           ),
-          trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.textMuted),
+          trailing: const Icon(
+            Icons.arrow_forward_ios_rounded,
+            size: 14,
+            color: AppColors.textMuted,
+          ),
         ),
       ),
     );

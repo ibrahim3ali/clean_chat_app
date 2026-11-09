@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../domain/usecases/get_messages_stream_usecase.dart';
 import '../../domain/usecases/send_message_usecase.dart';
 import 'chat_state.dart';
@@ -20,17 +22,18 @@ class ChatCubit extends Cubit<ChatState> {
   }) {
     emit(ChatLoading());
     _messagesSubscription?.cancel();
-    _messagesSubscription = getMessagesStreamUseCase(
-      currentUserId: currentUserId,
-      otherUserId: otherUserId,
-    ).listen(
-      (messages) {
-        emit(ChatLoaded(messages));
-      },
-      onError: (e) {
-        emit(ChatError(e.toString()));
-      },
-    );
+    _messagesSubscription =
+        getMessagesStreamUseCase(
+          currentUserId: currentUserId,
+          otherUserId: otherUserId,
+        ).listen(
+          (messages) {
+            emit(ChatLoaded(messages));
+          },
+          onError: (e) {
+            emit(ChatError(e.toString()));
+          },
+        );
   }
 
   Future<void> sendMessage({

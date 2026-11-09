@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/localization/localization_extension.dart';
 import '../../../../core/routes/app_routes.dart';
@@ -16,7 +17,9 @@ class NewChatBottomSheet extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       builder: (_) => NewChatBottomSheet(currentUser: currentUser),
     );
   }
@@ -46,27 +49,47 @@ class _NewChatBottomSheetState extends State<NewChatBottomSheet> {
       setState(() => _errorMessage = context.tr('cannotChatWithSelf'));
       return;
     }
-    setState(() { _isSearching = true; _errorMessage = null; });
+    setState(() {
+      _isSearching = true;
+      _errorMessage = null;
+    });
 
     try {
       final user = await context.read<UsersCubit>().searchUserByEmail(email);
       if (!mounted) return;
       if (user != null) {
         context.pop();
-        context.push(AppRoutes.chat, extra: ChatRouteExtra(currentUser: widget.currentUser, otherUser: user));
+        context.push(
+          AppRoutes.chat,
+          extra: ChatRouteExtra(
+            currentUser: widget.currentUser,
+            otherUser: user,
+          ),
+        );
       } else {
-        setState(() { _isSearching = false; _errorMessage = context.tr('userNotFound'); });
+        setState(() {
+          _isSearching = false;
+          _errorMessage = context.tr('userNotFound');
+        });
       }
     } catch (e) {
       if (!mounted) return;
-      setState(() { _isSearching = false; _errorMessage = e.toString(); });
+      setState(() {
+        _isSearching = false;
+        _errorMessage = e.toString();
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 24, right: 24, top: 24, bottom: MediaQuery.of(context).viewInsets.bottom + 24),
+      padding: EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 24,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -74,12 +97,29 @@ class _NewChatBottomSheetState extends State<NewChatBottomSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(context.tr('startNewChat'), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-              IconButton(onPressed: () => context.pop(), icon: const Icon(Icons.close_rounded), color: AppColors.textMuted),
+              Text(
+                context.tr('startNewChat'),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              IconButton(
+                onPressed: () => context.pop(),
+                icon: const Icon(Icons.close_rounded),
+                color: AppColors.textMuted,
+              ),
             ],
           ),
           const SizedBox(height: 8),
-          Text(context.tr('enterEmailPrompt'), style: const TextStyle(fontSize: 14, color: AppColors.textSecondary)),
+          Text(
+            context.tr('enterEmailPrompt'),
+            style: const TextStyle(
+              fontSize: 14,
+              color: AppColors.textSecondary,
+            ),
+          ),
           const SizedBox(height: 18),
           TextField(
             controller: _emailController,
@@ -97,8 +137,18 @@ class _NewChatBottomSheetState extends State<NewChatBottomSheet> {
           ElevatedButton(
             onPressed: _isSearching ? null : _searchAndStartChat,
             child: _isSearching
-                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                : Text(context.tr('searchAndStart'), style: const TextStyle(fontSize: 16)),
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                : Text(
+                    context.tr('searchAndStart'),
+                    style: const TextStyle(fontSize: 16),
+                  ),
           ),
         ],
       ),

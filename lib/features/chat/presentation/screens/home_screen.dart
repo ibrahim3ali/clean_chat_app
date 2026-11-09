@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../core/localization/language_toggle_button.dart';
@@ -53,13 +54,17 @@ class _HomeScreenState extends State<HomeScreen> {
             IconButton(
               icon: const Icon(Icons.logout_rounded),
               tooltip: context.tr('logout'),
-              onPressed: () => LogoutDialog.show(context, onConfirm: () => context.read<AuthCubit>().logout()),
+              onPressed: () => LogoutDialog.show(
+                context,
+                onConfirm: () => context.read<AuthCubit>().logout(),
+              ),
             ),
           ],
         ),
         body: BlocBuilder<AuthCubit, AuthState>(
           builder: (context, authState) {
-            if (authState is! Authenticated) return const Center(child: CircularProgressIndicator());
+            if (authState is! Authenticated)
+              return const Center(child: CircularProgressIndicator());
             final currentUser = authState.user;
 
             return Column(
@@ -67,20 +72,37 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 HomeProfileBanner(user: currentUser),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 6,
+                  ),
                   child: Text(
                     context.tr('recentChats'),
-                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textSecondary),
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ),
                 Expanded(
                   child: BlocBuilder<UsersCubit, UsersState>(
                     builder: (context, state) {
-                      if (state is UsersLoading) return const Center(child: CircularProgressIndicator());
-                      if (state is UsersError) return Center(child: Text(state.message, style: const TextStyle(color: AppColors.error)));
+                      if (state is UsersLoading)
+                        return const Center(child: CircularProgressIndicator());
+                      if (state is UsersError)
+                        return Center(
+                          child: Text(
+                            state.message,
+                            style: const TextStyle(color: AppColors.error),
+                          ),
+                        );
                       if (state is UsersLoaded) {
                         if (state.conversations.isEmpty) {
-                          return HomeEmptyState(onStartChat: () => NewChatBottomSheet.show(context, currentUser));
+                          return HomeEmptyState(
+                            onStartChat: () =>
+                                NewChatBottomSheet.show(context, currentUser),
+                          );
                         }
                         return ListView.builder(
                           itemCount: state.conversations.length,
@@ -91,7 +113,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               currentUserId: currentUser.uid,
                               onTap: () => context.push(
                                 AppRoutes.chat,
-                                extra: ChatRouteExtra(currentUser: currentUser, otherUser: conv.toUserEntity()),
+                                extra: ChatRouteExtra(
+                                  currentUser: currentUser,
+                                  otherUser: conv.toUserEntity(),
+                                ),
                               ),
                             );
                           },
@@ -112,7 +137,13 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () => NewChatBottomSheet.show(context, state.user),
               backgroundColor: AppColors.primary,
               icon: const Icon(Icons.add_comment_rounded, color: Colors.white),
-              label: Text(context.tr('startNewChat'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              label: Text(
+                context.tr('startNewChat'),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             );
           },
         ),

@@ -19,11 +19,11 @@ class MessageEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        senderId,
-        senderName,
-        receiverId,
-        text,
-        timestamp,
-      ];
+    id,
+    senderId,
+    senderName,
+    receiverId,
+    text,
+    timestamp,
+  ];
 }

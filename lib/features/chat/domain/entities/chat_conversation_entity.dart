@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+
 import '../../../auth/domain/entities/user_entity.dart';
 
 class ChatConversationEntity extends Equatable {
@@ -31,12 +32,12 @@ class ChatConversationEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        otherUserId,
-        otherUserName,
-        otherUserEmail,
-        isOnline,
-        lastMessage,
-        lastMessageTime,
-        lastSenderId,
-      ];
+    otherUserId,
+    otherUserName,
+    otherUserEmail,
+    isOnline,
+    lastMessage,
+    lastMessageTime,
+    lastSenderId,
+  ];
 }

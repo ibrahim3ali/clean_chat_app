@@ -5,7 +5,9 @@ import '../entities/message_entity.dart';
 abstract class ChatRepository {
   Stream<List<UserEntity>> getUsersStream();
 
-  Stream<List<ChatConversationEntity>> getConversationsStream(String currentUserId);
+  Stream<List<ChatConversationEntity>> getConversationsStream(
+    String currentUserId,
+  );
 
   Future<UserEntity?> getUserByEmail(String email);
 

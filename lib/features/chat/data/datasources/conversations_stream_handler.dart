@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../auth/data/models/user_model.dart';
 import '../models/chat_conversation_model.dart';
 
@@ -33,15 +35,17 @@ class ConversationsStreamHandler {
           lastTime = DateTime.tryParse(rawTime);
         }
 
-        list.add(ChatConversationModel(
-          otherUserId: user.uid,
-          otherUserName: user.name,
-          otherUserEmail: user.email,
-          isOnline: user.isOnline,
-          lastMessage: lastMsg,
-          lastMessageTime: lastTime,
-          lastSenderId: chatData['lastSenderId'] as String? ?? '',
-        ));
+        list.add(
+          ChatConversationModel(
+            otherUserId: user.uid,
+            otherUserName: user.name,
+            otherUserEmail: user.email,
+            isOnline: user.isOnline,
+            lastMessage: lastMsg,
+            lastMessageTime: lastTime,
+            lastSenderId: chatData['lastSenderId'] as String? ?? '',
+          ),
+        );
       }
 
       list.sort((a, b) {
@@ -62,33 +66,34 @@ class ConversationsStreamHandler {
     StreamSubscription? chatsSub;
 
     controller.onListen = () {
-      usersSub = firestore.collection('users').snapshots().listen(
-        (snap) {
-          allUsers = snap.docs.map((d) => UserModel.fromMap(d.data(), d.id)).toList();
-          emitMerged();
-        },
-        onError: (e) => controller.addError(e),
-      );
+      usersSub = firestore.collection('users').snapshots().listen((snap) {
+        allUsers = snap.docs
+            .map((d) => UserModel.fromMap(d.data(), d.id))
+            .toList();
+        emitMerged();
+      }, onError: (e) => controller.addError(e));
 
       chatsSub = firestore
           .collection('chats')
           .where('participants', arrayContains: currentUserId)
           .snapshots()
-          .listen(
-        (snap) {
-          chatsMap.clear();
-          for (final doc in snap.docs) {
-            final data = doc.data();
-            final participants = List<String>.from(data['participants'] ?? []);
-            final otherId = participants.firstWhere((id) => id != currentUserId, orElse: () => '');
-            if (otherId.isNotEmpty) {
-              chatsMap[otherId] = data;
+          .listen((snap) {
+            chatsMap.clear();
+            for (final doc in snap.docs) {
+              final data = doc.data();
+              final participants = List<String>.from(
+                data['participants'] ?? [],
+              );
+              final otherId = participants.firstWhere(
+                (id) => id != currentUserId,
+                orElse: () => '',
+              );
+              if (otherId.isNotEmpty) {
+                chatsMap[otherId] = data;
+              }
             }
-          }
-          emitMerged();
-        },
-        onError: (e) => controller.addError(e),
-      );
+            emitMerged();
+          }, onError: (e) => controller.addError(e));
     };
 
     controller.onCancel = () {

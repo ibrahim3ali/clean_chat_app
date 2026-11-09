@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../auth/domain/entities/user_entity.dart';
 import '../../domain/usecases/get_conversations_usecase.dart';
 import '../../domain/usecases/search_user_by_email_usecase.dart';

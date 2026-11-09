@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+
 import '../../domain/entities/chat_conversation_entity.dart';
 
 abstract class UsersState extends Equatable {

@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../../features/auth/data/datasources/auth_remote_data_source_impl.dart';
+import '../../features/chat/data/datasources/chat_remote_data_source_impl.dart';
 import '../localization/locale_cubit.dart';
 import '../notifications/in_app_notification_watcher.dart';
 import '../notifications/notification_service.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
-import '../../features/auth/domain/repositories/auth_repository.dart';
+import '../../features/auth/domain/auth_repository.dart';
 import '../../features/auth/domain/usecases/get_current_user_usecase.dart';
 import '../../features/auth/domain/usecases/login_usecase.dart';
 import '../../features/auth/domain/usecases/logout_usecase.dart';

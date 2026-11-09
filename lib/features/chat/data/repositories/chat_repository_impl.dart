@@ -15,7 +15,9 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Stream<List<ChatConversationEntity>> getConversationsStream(String currentUserId) {
+  Stream<List<ChatConversationEntity>> getConversationsStream(
+    String currentUserId,
+  ) {
     return remoteDataSource.getConversationsStream(currentUserId);
   }
 

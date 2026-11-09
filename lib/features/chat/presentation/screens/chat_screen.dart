@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/notifications/in_app_notification_watcher.dart';
 import '../../../auth/domain/entities/user_entity.dart';
@@ -15,7 +16,11 @@ class ChatScreen extends StatefulWidget {
   final UserEntity currentUser;
   final UserEntity otherUser;
 
-  const ChatScreen({super.key, required this.currentUser, required this.otherUser});
+  const ChatScreen({
+    super.key,
+    required this.currentUser,
+    required this.otherUser,
+  });
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -32,7 +37,12 @@ class _ChatScreenState extends State<ChatScreen> {
       .collection('chats')
       .doc(_chatId)
       .snapshots()
-      .map((doc) => (doc.data()?['typing'] as Map<String, dynamic>?)?[widget.otherUser.uid] == true);
+      .map(
+        (doc) =>
+            (doc.data()?['typing']
+                as Map<String, dynamic>?)?[widget.otherUser.uid] ==
+            true,
+      );
 
   void _setTyping(bool isTyping) {
     FirebaseFirestore.instance.collection('chats').doc(_chatId).set({
@@ -45,9 +55,9 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     InAppNotificationWatcher.activeChatPartnerId = widget.otherUser.uid;
     context.read<ChatCubit>().listenToMessages(
-          currentUserId: widget.currentUser.uid,
-          otherUserId: widget.otherUser.uid,
-        );
+      currentUserId: widget.currentUser.uid,
+      otherUserId: widget.otherUser.uid,
+    );
   }
 
   @override
@@ -60,11 +70,11 @@ class _ChatScreenState extends State<ChatScreen> {
   void _sendMessage(String text) {
     _setTyping(false);
     context.read<ChatCubit>().sendMessage(
-          currentUserId: widget.currentUser.uid,
-          currentUserName: widget.currentUser.name,
-          receiverId: widget.otherUser.uid,
-          text: text,
-        );
+      currentUserId: widget.currentUser.uid,
+      currentUserName: widget.currentUser.name,
+      receiverId: widget.otherUser.uid,
+      text: text,
+    );
   }
 
   @override
@@ -72,7 +82,10 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
-        title: ChatAppBarTitle(otherUser: widget.otherUser, typingStream: _typingStream),
+        title: ChatAppBarTitle(
+          otherUser: widget.otherUser,
+          typingStream: _typingStream,
+        ),
       ),
       body: Column(
         children: [
@@ -80,14 +93,24 @@ class _ChatScreenState extends State<ChatScreen> {
             child: BlocConsumer<ChatCubit, ChatState>(
               listener: (context, state) {
                 if (state is ChatError) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: AppColors.error));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.message),
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
                 }
               },
               builder: (context, state) {
-                if (state is ChatLoading) return const Center(child: CircularProgressIndicator());
+                if (state is ChatLoading)
+                  return const Center(child: CircularProgressIndicator());
                 if (state is ChatLoaded) {
-                  if (state.messages.isEmpty) return const ChatEmptyMessagesState();
-                  return ChatMessagesList(messages: state.messages, currentUserId: widget.currentUser.uid);
+                  if (state.messages.isEmpty)
+                    return const ChatEmptyMessagesState();
+                  return ChatMessagesList(
+                    messages: state.messages,
+                    currentUserId: widget.currentUser.uid,
+                  );
                 }
                 return const SizedBox.shrink();
               },
