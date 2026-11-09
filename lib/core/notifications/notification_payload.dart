@@ -1,5 +1,7 @@
 import 'dart:convert';
-import '../../features/auth/domain/entities/user_entity.dart';
+
+import '../../features.dart';
+
 
 class NotificationPayload {
   final String senderId;

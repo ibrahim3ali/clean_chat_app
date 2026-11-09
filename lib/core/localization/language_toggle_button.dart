@@ -1,6 +1,8 @@
-import 'package:clean_chat_app/core.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../core.dart';
 
 class LanguageToggleButton extends StatelessWidget {
   final Color? color;

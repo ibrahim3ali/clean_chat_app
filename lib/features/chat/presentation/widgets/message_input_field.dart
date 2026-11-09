@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 import '../../../../core.dart';
 
-
 class MessageInputField extends StatefulWidget {
   final Function(String) onSendMessage;
   final ValueChanged<bool>? onTypingChanged;

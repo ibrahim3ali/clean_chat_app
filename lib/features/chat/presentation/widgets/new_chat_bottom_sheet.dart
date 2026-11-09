@@ -3,8 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core.dart';
-import '../../../auth/domain/entities/user_entity.dart';
-import '../cubit/users_cubit.dart';
+import '../../../../features.dart';
 
 class NewChatBottomSheet extends StatefulWidget {
   final UserEntity currentUser;

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core.dart';
-import '../../domain/entities/chat_conversation_entity.dart';
-import 'chat_user_avatar.dart';
+import '../../../../features.dart';
 
 class UserListTile extends StatelessWidget {
   final ChatConversationEntity conversation;

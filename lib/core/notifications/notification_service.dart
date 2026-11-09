@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
-import 'local_notification_service.dart';
-import 'notification_navigator.dart';
-import 'notification_payload.dart';
+import 'package:flutter/material.dart';
+
+import '../../core.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -16,11 +15,9 @@ class NotificationService {
   final FirebaseFirestore _firestore;
   String? cachedToken;
 
-  NotificationService({
-    FirebaseMessaging? fcm,
-    FirebaseFirestore? firestore,
-  })  : _fcm = fcm ?? FirebaseMessaging.instance,
-        _firestore = firestore ?? FirebaseFirestore.instance;
+  NotificationService({FirebaseMessaging? fcm, FirebaseFirestore? firestore})
+    : _fcm = fcm ?? FirebaseMessaging.instance,
+      _firestore = firestore ?? FirebaseFirestore.instance;
 
   Future<void> initialize() async {
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
@@ -34,7 +31,8 @@ class NotificationService {
     debugPrint('[FCM] Permission status: ${settings.authorizationStatus}');
 
     await LocalNotificationService.initialize(
-      onSelectNotification: (payload) => NotificationNavigator.handlePayload(payload),
+      onSelectNotification: (payload) =>
+          NotificationNavigator.handlePayload(payload),
     );
 
     _setupForegroundListener();
@@ -46,7 +44,9 @@ class NotificationService {
 
   void _setupForegroundListener() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      debugPrint('[FCM Foreground] Title: ${message.notification?.title}, Body: ${message.notification?.body}');
+      debugPrint(
+        '[FCM Foreground] Title: ${message.notification?.title}, Body: ${message.notification?.body}',
+      );
       final notification = message.notification;
       final data = message.data;
       final title = notification?.title ?? data['senderName'] ?? 'رسالة جديدة';
@@ -107,11 +107,12 @@ class NotificationService {
     try {
       final fcmToken = token ?? await getToken();
       if (fcmToken != null && fcmToken.isNotEmpty) {
-        await _firestore.collection('users').doc(userId).set(
-          {'fcmToken': fcmToken},
-          SetOptions(merge: true),
+        await _firestore.collection('users').doc(userId).set({
+          'fcmToken': fcmToken,
+        }, SetOptions(merge: true));
+        debugPrint(
+          '[FCM] Successfully saved token in Firestore for user $userId',
         );
-        debugPrint('[FCM] Successfully saved token in Firestore for user $userId');
       } else {
         debugPrint('[FCM] Token is null, could not save for user $userId');
       }

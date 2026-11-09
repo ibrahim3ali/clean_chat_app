@@ -3,8 +3,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core.dart';
 
-
-
 class LogoutDialog extends StatelessWidget {
   final VoidCallback onConfirm;
 

@@ -1,5 +1,4 @@
-import '../entities/message_entity.dart';
-import '../repositories/chat_repository.dart';
+import '../../../../features.dart';
 
 class GetMessagesStreamUseCase {
   final ChatRepository repository;

@@ -1,4 +1,4 @@
-import '../repositories/chat_repository.dart';
+import '../../../../features.dart';
 
 class SendMessageUseCase {
   final ChatRepository repository;

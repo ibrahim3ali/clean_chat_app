@@ -2,9 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-
-import '../../domain/usecases.dart';
-import 'chat_state.dart';
+import '../../../../features.dart';
 
 class ChatCubit extends Cubit<ChatState> {
   final GetMessagesStreamUseCase getMessagesStreamUseCase;

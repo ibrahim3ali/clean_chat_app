@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants.dart';
-import '../../../../core/di.dart';
-import '../../../../core/localization.dart';
-import '../../../../core/routes.dart';
-import '../../../auth/presentation.dart';
-import '../../presentation.dart';
+import '../../../../core.dart';
+import '../../../../features.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

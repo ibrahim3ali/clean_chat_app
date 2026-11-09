@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
+import '../../../../core.dart';
 
 class ChatUserAvatar extends StatelessWidget {
   final String name;

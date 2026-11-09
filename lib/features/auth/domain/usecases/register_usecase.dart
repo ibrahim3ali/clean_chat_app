@@ -1,5 +1,4 @@
-import '../entities/user_entity.dart';
-import '../repositories/auth_repository.dart';
+import '../../../../features.dart';
 
 class RegisterUseCase {
   final AuthRepository repository;
@@ -10,10 +9,6 @@ class RegisterUseCase {
     required String email,
     required String password,
   }) {
-    return repository.register(
-      name: name,
-      email: email,
-      password: password,
-    );
+    return repository.register(name: name, email: email, password: password);
   }
 }

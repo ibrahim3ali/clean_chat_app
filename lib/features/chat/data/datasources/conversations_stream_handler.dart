@@ -2,8 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../../auth/data/models/user_model.dart';
-import '../models/chat_conversation_model.dart';
+import '../../../../features.dart';
 
 class ConversationsStreamHandler {
   final FirebaseFirestore firestore;

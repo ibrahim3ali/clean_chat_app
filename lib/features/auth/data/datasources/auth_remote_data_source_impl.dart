@@ -1,7 +1,7 @@
-import 'package:clean_chat_app/core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../../../../core.dart';
 import '../../data.dart';
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {

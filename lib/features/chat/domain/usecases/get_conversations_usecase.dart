@@ -1,5 +1,4 @@
-import '../entities/chat_conversation_entity.dart';
-import '../repositories/chat_repository.dart';
+import '../../../../features.dart';
 
 class GetConversationsUseCase {
   final ChatRepository repository;

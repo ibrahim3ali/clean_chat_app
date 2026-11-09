@@ -1,7 +1,4 @@
-
-
-import '../../../auth/data/models.dart';
-import '../models.dart';
+import '../../../../features.dart';
 
 abstract class ChatRemoteDataSource {
   Stream<List<UserModel>> getUsersStream();

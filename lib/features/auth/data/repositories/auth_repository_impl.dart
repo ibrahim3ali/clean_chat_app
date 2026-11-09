@@ -1,5 +1,4 @@
-import '../../domain.dart';
-import '../datasources.dart';
+import '../../../../features.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;

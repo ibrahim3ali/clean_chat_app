@@ -1,7 +1,8 @@
-import 'package:clean_chat_app/core.dart';
-import 'package:clean_chat_app/features.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import '../../core.dart';
+import '../../features.dart';
 
 class ServiceLocator {
   ServiceLocator._();

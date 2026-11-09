@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../../../core/errors.dart';
-import '../../../../core/notifications.dart';
-import '../../../auth/data/models.dart';
-import '../../data.dart';
+import '../../../../core.dart';
+import '../../../../features.dart';
 
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   final FirebaseFirestore firestore;

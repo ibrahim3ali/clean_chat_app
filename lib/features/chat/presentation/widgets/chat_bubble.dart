@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core.dart';
-import '../../domain/entities/message_entity.dart';
+import '../../../../features.dart';
 
 class ChatBubble extends StatelessWidget {
   final MessageEntity message;

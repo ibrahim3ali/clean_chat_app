@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
+import '../../../../core.dart';
 
 class AuthHeader extends StatelessWidget {
   final String title;

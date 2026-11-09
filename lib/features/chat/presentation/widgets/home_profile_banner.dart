@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../../auth/domain/entities/user_entity.dart';
+import '../../../../core.dart';
+import '../../../../features.dart';
 
 class HomeProfileBanner extends StatelessWidget {
   final UserEntity user;

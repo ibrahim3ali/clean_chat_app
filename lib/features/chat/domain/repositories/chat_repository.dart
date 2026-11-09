@@ -1,6 +1,5 @@
-import '../../../auth/domain/entities/user_entity.dart';
-import '../entities/chat_conversation_entity.dart';
-import '../entities/message_entity.dart';
+
+import '../../../../features.dart';
 
 abstract class ChatRepository {
   Stream<List<UserEntity>> getUsersStream();

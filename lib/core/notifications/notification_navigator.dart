@@ -1,7 +1,7 @@
-import 'package:clean_chat_app/core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../../features/auth/domain/entities.dart';
+import '../../core.dart';
+import '../../features.dart';
 
 class NotificationNavigator {
   NotificationNavigator._();
