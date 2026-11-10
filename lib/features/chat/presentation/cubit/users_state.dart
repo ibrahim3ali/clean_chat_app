@@ -2,8 +2,6 @@ import 'package:equatable/equatable.dart';
 
 import '../../../../features.dart';
 
-
-
 abstract class UsersState extends Equatable {
   const UsersState();
 

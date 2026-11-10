@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../../core.dart';
 import '../../../../features.dart';
 
-
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 

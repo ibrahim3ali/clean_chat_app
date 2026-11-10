@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../../../features.dart';
-
-
+import '../../domain/entities/message_entity.dart';
 
 class MessageModel extends MessageEntity {
   const MessageModel({
@@ -11,6 +9,9 @@ class MessageModel extends MessageEntity {
     required super.senderName,
     required super.receiverId,
     required super.text,
+    super.type,
+    super.mediaUrl,
+    super.mediaDuration,
     required super.timestamp,
   });
 
@@ -33,6 +34,9 @@ class MessageModel extends MessageEntity {
       senderName: data['senderName'] as String? ?? '',
       receiverId: data['receiverId'] as String? ?? '',
       text: data['text'] as String? ?? '',
+      type: data['type'] as String? ?? 'text',
+      mediaUrl: data['mediaUrl'] as String?,
+      mediaDuration: data['mediaDuration'] as int?,
       timestamp: parsedTime,
     );
   }
@@ -43,6 +47,9 @@ class MessageModel extends MessageEntity {
       'senderName': senderName,
       'receiverId': receiverId,
       'text': text,
+      'type': type,
+      if (mediaUrl != null) 'mediaUrl': mediaUrl,
+      if (mediaDuration != null) 'mediaDuration': mediaDuration,
       'timestamp': FieldValue.serverTimestamp(),
     };
   }

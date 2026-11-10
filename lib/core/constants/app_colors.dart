@@ -17,7 +17,7 @@ class AppColors {
 
   static const Color sentMessage = Color(0xFF0F8A5F);
   static const Color receivedMessage = Color(0xFFE2E8F0);
-  
+
   static const Color error = Color(0xFFE53935);
   static const Color border = Color(0xFFE2E8F0);
 }

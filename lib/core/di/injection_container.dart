@@ -16,6 +16,7 @@ class ServiceLocator {
   static late final GetCurrentUserUseCase getCurrentUserUseCase;
 
   // Chat
+  static late final ChatStorageDataSource chatStorageDataSource;
   static late final ChatRemoteDataSource chatRemoteDataSource;
   static late final ChatRepository chatRepository;
   static late final GetAllUsersUseCase getAllUsersUseCase;
@@ -23,6 +24,7 @@ class ServiceLocator {
   static late final SearchUserByEmailUseCase searchUserByEmailUseCase;
   static late final GetMessagesStreamUseCase getMessagesStreamUseCase;
   static late final SendMessageUseCase sendMessageUseCase;
+  static late final SendMediaMessageUseCase sendMediaMessageUseCase;
 
   // Notifications
   static late final NotificationService notificationService;
@@ -48,13 +50,18 @@ class ServiceLocator {
     getCurrentUserUseCase = GetCurrentUserUseCase(authRepository);
 
     // 2. Chat Feature DI
-    chatRemoteDataSource = ChatRemoteDataSourceImpl(firestore: firestore);
+    chatStorageDataSource = ChatStorageDataSourceImpl();
+    chatRemoteDataSource = ChatRemoteDataSourceImpl(
+      firestore: firestore,
+      storageDataSource: chatStorageDataSource,
+    );
     chatRepository = ChatRepositoryImpl(remoteDataSource: chatRemoteDataSource);
     getAllUsersUseCase = GetAllUsersUseCase(chatRepository);
     getConversationsUseCase = GetConversationsUseCase(chatRepository);
     searchUserByEmailUseCase = SearchUserByEmailUseCase(chatRepository);
     getMessagesStreamUseCase = GetMessagesStreamUseCase(chatRepository);
     sendMessageUseCase = SendMessageUseCase(chatRepository);
+    sendMediaMessageUseCase = SendMediaMessageUseCase(chatRepository);
   }
 
   static AuthCubit get authCubit => AuthCubit(
@@ -72,6 +79,7 @@ class ServiceLocator {
   static ChatCubit get chatCubit => ChatCubit(
     getMessagesStreamUseCase: getMessagesStreamUseCase,
     sendMessageUseCase: sendMessageUseCase,
+    sendMediaMessageUseCase: sendMediaMessageUseCase,
   );
 
   static LocaleCubit get localeCubit => LocaleCubit();

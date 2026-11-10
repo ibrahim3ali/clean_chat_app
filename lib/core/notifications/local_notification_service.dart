@@ -15,7 +15,9 @@ class LocalNotificationService {
   }) async {
     onNotificationClick = onSelectNotification;
 
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
@@ -36,7 +38,8 @@ class LocalNotificationService {
 
     final androidPlugin = _notificationsPlugin
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     if (androidPlugin != null) {
       const channel = AndroidNotificationChannel(
         channelId,
@@ -78,12 +81,6 @@ class LocalNotificationService {
       iOS: iosDetails,
     );
 
-    await _notificationsPlugin.show(
-      id,
-      title,
-      body,
-      details,
-      payload: payload,
-    );
+    await _notificationsPlugin.show(id, title, body, details, payload: payload);
   }
 }

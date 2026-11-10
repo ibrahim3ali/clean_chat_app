@@ -1,3 +1,5 @@
+﻿import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -70,50 +72,111 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  void _sendMedia(File file, String type, {int? duration}) {
+    context.read<ChatCubit>().sendMediaMessage(
+      currentUserId: widget.currentUser.uid,
+      currentUserName: widget.currentUser.name,
+      receiverId: widget.otherUser.uid,
+      file: file,
+      type: type,
+      duration: duration,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        titleSpacing: 0,
-        title: ChatAppBarTitle(
-          otherUser: widget.otherUser,
-          typingStream: _typingStream,
+    return PopScope(
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) {
+          context.read<ChatCubit>().clearSessionMedia();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          titleSpacing: 0,
+          title: ChatAppBarTitle(
+            otherUser: widget.otherUser,
+            typingStream: _typingStream,
+          ),
         ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: BlocConsumer<ChatCubit, ChatState>(
-              listener: (context, state) {
-                if (state is ChatError) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(state.message),
-                      backgroundColor: AppColors.error,
-                    ),
-                  );
-                }
-              },
-              builder: (context, state) {
-                if (state is ChatLoading)
-                  return const Center(child: CircularProgressIndicator());
-                if (state is ChatLoaded) {
-                  if (state.messages.isEmpty)
+        body: Column(
+          children: [
+            Expanded(
+              child: BlocConsumer<ChatCubit, ChatState>(
+                listener: (context, state) {
+                  if (state is ChatError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.message),
+                        backgroundColor: AppColors.error,
+                      ),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  if (state is ChatLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final messages = state is ChatLoaded
+                      ? state.messages
+                      : (state is ChatError
+                          ? state.messages
+                          : const <MessageEntity>[]);
+
+                  if (messages.isEmpty) {
+                    if (state is ChatError) return const SizedBox.shrink();
                     return const ChatEmptyMessagesState();
+                  }
                   return ChatMessagesList(
-                    messages: state.messages,
+                    messages: messages,
                     currentUserId: widget.currentUser.uid,
+                  );
+                },
+              ),
+            ),
+            BlocBuilder<ChatCubit, ChatState>(
+              builder: (context, state) {
+                if (state is ChatLoaded && state.isUploading) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 4,
+                      horizontal: 16,
+                    ),
+                    color: AppColors.primaryLight,
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 14,
+                          height: 14,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'جاري الرفع...',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 }
                 return const SizedBox.shrink();
               },
             ),
-          ),
-          MessageInputField(
-            onSendMessage: _sendMessage,
-            onTypingChanged: _setTyping,
-          ),
-        ],
+            MessageInputField(
+              onSendMessage: _sendMessage,
+              onSendMedia: _sendMedia,
+              onTypingChanged: _setTyping,
+            ),
+          ],
+        ),
       ),
     );
   }

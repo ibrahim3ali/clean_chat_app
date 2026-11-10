@@ -1,18 +1,29 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../../../core.dart';
-import '../../../../features.dart';
+import '../../../../core/errors/exceptions.dart';
+import '../../../../core/notifications/fcm_v1_sender_service.dart';
+import '../../../auth/data/models/user_model.dart';
+import '../models/chat_conversation_model.dart';
+import '../models/message_model.dart';
+import 'chat_remote_data_source.dart';
+import 'chat_storage_data_source.dart';
+import 'conversations_stream_handler.dart';
 
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   final FirebaseFirestore firestore;
   final ConversationsStreamHandler _conversationsHandler;
   final FcmV1SenderService _fcmSender;
+  final ChatStorageDataSource _storageDataSource;
 
   ChatRemoteDataSourceImpl({
     required this.firestore,
     FcmV1SenderService? fcmSender,
+    ChatStorageDataSource? storageDataSource,
   }) : _conversationsHandler = ConversationsStreamHandler(firestore: firestore),
-       _fcmSender = fcmSender ?? FcmV1SenderService(firestore: firestore);
+       _fcmSender = fcmSender ?? FcmV1SenderService(firestore: firestore),
+       _storageDataSource = storageDataSource ?? ChatStorageDataSourceImpl();
 
   String _getChatId(String uid1, String uid2) =>
       (uid1.compareTo(uid2) < 0) ? '${uid1}_$uid2' : '${uid2}_$uid1';
@@ -80,6 +91,9 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     required String currentUserName,
     required String receiverId,
     required String text,
+    String type = 'text',
+    String? mediaUrl,
+    int? mediaDuration,
   }) async {
     try {
       final chatId = _getChatId(currentUserId, receiverId);
@@ -89,10 +103,19 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         'senderName': currentUserName,
         'receiverId': receiverId,
         'text': text.trim(),
+        'type': type,
+        'mediaUrl': ?mediaUrl,
+        'mediaDuration': ?mediaDuration,
         'timestamp': FieldValue.serverTimestamp(),
       });
+
+      String preview = text.trim();
+      if (type == 'image') preview = preview.isNotEmpty ? preview : '📷 صورة';
+      if (type == 'video') preview = preview.isNotEmpty ? preview : '🎥 فيديو';
+      if (type == 'audio') preview = '🎤 تسجيل صوتي';
+
       await chatDocRef.set({
-        'lastMessage': text.trim(),
+        'lastMessage': preview,
         'lastUpdated': FieldValue.serverTimestamp(),
         'lastSenderId': currentUserId,
         'participants': [currentUserId, receiverId],
@@ -103,10 +126,23 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         senderId: currentUserId,
         senderName: currentUserName,
         senderEmail: '',
-        messageText: text.trim(),
+        messageText: preview,
       );
     } catch (e) {
       throw ServerException('فشل في إرسال الرسالة: $e');
     }
+  }
+
+  @override
+  Future<String> uploadMediaFile({
+    required File file,
+    required String chatId,
+    required String folder,
+  }) {
+    return _storageDataSource.uploadChatFile(
+      file: file,
+      chatId: chatId,
+      folder: folder,
+    );
   }
 }

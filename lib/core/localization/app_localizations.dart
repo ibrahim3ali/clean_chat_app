@@ -9,12 +9,10 @@ class AppLocalizations {
         AppLocalizations(const Locale('ar'));
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
 
-  static const List<Locale> supportedLocales = [
-    Locale('ar'),
-    Locale('en'),
-  ];
+  static const List<Locale> supportedLocales = [Locale('ar'), Locale('en')];
 
   static final Map<String, Map<String, String>> _values = {
     'ar': {
@@ -73,7 +71,8 @@ class AppLocalizations {
       'noChatsYet': 'No conversations yet',
       'noChatsDesc': 'Only contacts you have messaged will appear here.\nTap the button below to start a new chat by email.',
       'startNewChat': 'New Chat',
-      'enterEmailPrompt': 'Enter the email address of the person you want to chat with:',
+      'enterEmailPrompt':
+          'Enter the email address of the person you want to chat with:',
       'searchAndStart': 'Search & Start Chat',
       'logout': 'Sign Out',
       'logoutConfirm': 'Are you sure you want to sign out?',
@@ -100,14 +99,16 @@ class AppLocalizations {
   }
 }
 
-class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
   bool isSupported(Locale locale) => ['ar', 'en'].contains(locale.languageCode);
 
   @override
-  Future<AppLocalizations> load(Locale locale) async => AppLocalizations(locale);
+  Future<AppLocalizations> load(Locale locale) async =>
+      AppLocalizations(locale);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;

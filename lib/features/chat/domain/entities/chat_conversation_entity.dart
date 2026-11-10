@@ -2,8 +2,6 @@ import 'package:equatable/equatable.dart';
 
 import '../../../../features.dart';
 
-
-
 class ChatConversationEntity extends Equatable {
   final String otherUserId;
   final String otherUserName;

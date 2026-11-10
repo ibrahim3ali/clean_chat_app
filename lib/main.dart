@@ -29,7 +29,9 @@ class CleanChatApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<LocaleCubit>(create: (_) => ServiceLocator.localeCubit),
-        BlocProvider<AuthCubit>(create: (_) => ServiceLocator.authCubit..checkAuthStatus()),
+        BlocProvider<AuthCubit>(
+          create: (_) => ServiceLocator.authCubit..checkAuthStatus(),
+        ),
         BlocProvider<UsersCubit>(create: (_) => ServiceLocator.usersCubit),
         BlocProvider<ChatCubit>(create: (_) => ServiceLocator.chatCubit),
       ],

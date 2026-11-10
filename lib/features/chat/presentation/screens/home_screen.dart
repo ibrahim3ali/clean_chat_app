@@ -51,8 +51,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         body: BlocBuilder<AuthCubit, AuthState>(
           builder: (context, authState) {
-            if (authState is! Authenticated)
+            if (authState is! Authenticated) {
               return const Center(child: CircularProgressIndicator());
+            }
             final currentUser = authState.user;
 
             return Column(
@@ -76,15 +77,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: BlocBuilder<UsersCubit, UsersState>(
                     builder: (context, state) {
-                      if (state is UsersLoading)
+                      if (state is UsersLoading) {
                         return const Center(child: CircularProgressIndicator());
-                      if (state is UsersError)
+                      }
+                      if (state is UsersError) {
                         return Center(
                           child: Text(
                             state.message,
                             style: const TextStyle(color: AppColors.error),
                           ),
                         );
+                      }
                       if (state is UsersLoaded) {
                         if (state.conversations.isEmpty) {
                           return HomeEmptyState(

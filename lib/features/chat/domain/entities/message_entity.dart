@@ -6,6 +6,9 @@ class MessageEntity extends Equatable {
   final String senderName;
   final String receiverId;
   final String text;
+  final String type; // 'text', 'image', 'video', 'audio'
+  final String? mediaUrl;
+  final int? mediaDuration;
   final DateTime timestamp;
 
   const MessageEntity({
@@ -14,8 +17,16 @@ class MessageEntity extends Equatable {
     required this.senderName,
     required this.receiverId,
     required this.text,
+    this.type = 'text',
+    this.mediaUrl,
+    this.mediaDuration,
     required this.timestamp,
   });
+
+  bool get isText => type == 'text';
+  bool get isImage => type == 'image';
+  bool get isVideo => type == 'video';
+  bool get isAudio => type == 'audio';
 
   @override
   List<Object?> get props => [
@@ -24,6 +35,9 @@ class MessageEntity extends Equatable {
     senderName,
     receiverId,
     text,
+    type,
+    mediaUrl,
+    mediaDuration,
     timestamp,
   ];
 }

@@ -4,5 +4,6 @@ export 'core/errors.dart';
 export 'core/localization.dart';
 export 'core/notifications.dart';
 export 'core/routes.dart';
+export 'core/services.dart';
 export 'core/theme.dart';
 export 'core/utils.dart';

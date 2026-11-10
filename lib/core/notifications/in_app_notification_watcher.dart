@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'local_notification_service.dart';
 import 'notification_payload.dart';
 
@@ -11,7 +13,7 @@ class InAppNotificationWatcher {
   bool _isInitialLoad = true;
 
   InAppNotificationWatcher({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   void startWatching(String currentUserId) {
     stopWatching();
@@ -23,37 +25,37 @@ class InAppNotificationWatcher {
         .where('participants', arrayContains: currentUserId)
         .snapshots()
         .listen((snapshot) {
-      if (_isInitialLoad) {
-        for (final doc in snapshot.docs) {
-          final lastMsg = doc.data()['lastMessage'] as String?;
-          if (lastMsg != null) {
-            _lastSeenMessages[doc.id] = lastMsg;
+          if (_isInitialLoad) {
+            for (final doc in snapshot.docs) {
+              final lastMsg = doc.data()['lastMessage'] as String?;
+              if (lastMsg != null) {
+                _lastSeenMessages[doc.id] = lastMsg;
+              }
+            }
+            _isInitialLoad = false;
+            return;
           }
-        }
-        _isInitialLoad = false;
-        return;
-      }
 
-      for (final doc in snapshot.docs) {
-        final data = doc.data();
-        final lastMsg = data['lastMessage'] as String?;
-        final lastSenderId = data['lastSenderId'] as String?;
-        if (lastMsg == null || lastSenderId == null) continue;
+          for (final doc in snapshot.docs) {
+            final data = doc.data();
+            final lastMsg = data['lastMessage'] as String?;
+            final lastSenderId = data['lastSenderId'] as String?;
+            if (lastMsg == null || lastSenderId == null) continue;
 
-        if (lastSenderId == currentUserId) continue;
-        if (lastSenderId == activeChatPartnerId) continue;
+            if (lastSenderId == currentUserId) continue;
+            if (lastSenderId == activeChatPartnerId) continue;
 
-        final previousMsg = _lastSeenMessages[doc.id];
-        if (previousMsg != lastMsg) {
-          _lastSeenMessages[doc.id] = lastMsg;
-          _notifyNewMessage(
-            chatId: doc.id,
-            senderId: lastSenderId,
-            lastMessage: lastMsg,
-          );
-        }
-      }
-    });
+            final previousMsg = _lastSeenMessages[doc.id];
+            if (previousMsg != lastMsg) {
+              _lastSeenMessages[doc.id] = lastMsg;
+              _notifyNewMessage(
+                chatId: doc.id,
+                senderId: lastSenderId,
+                lastMessage: lastMsg,
+              );
+            }
+          }
+        });
   }
 
   Future<void> _notifyNewMessage({

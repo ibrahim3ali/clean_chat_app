@@ -1,4 +1,8 @@
-import '../../../../features.dart';
+import 'dart:io';
+
+import '../../../auth/data/models/user_model.dart';
+import '../models/chat_conversation_model.dart';
+import '../models/message_model.dart';
 
 abstract class ChatRemoteDataSource {
   Stream<List<UserModel>> getUsersStream();
@@ -15,5 +19,13 @@ abstract class ChatRemoteDataSource {
     required String currentUserName,
     required String receiverId,
     required String text,
+    String type = 'text',
+    String? mediaUrl,
+    int? mediaDuration,
+  });
+  Future<String> uploadMediaFile({
+    required File file,
+    required String chatId,
+    required String folder,
   });
 }

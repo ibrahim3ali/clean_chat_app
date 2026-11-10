@@ -1,7 +1,6 @@
-import 'package:equatable/equatable.dart';
+﻿import 'package:equatable/equatable.dart';
 
-import '../../../../features.dart';
-
+import '../../domain/entities/message_entity.dart';
 
 abstract class ChatState extends Equatable {
   const ChatState();
@@ -16,16 +15,27 @@ class ChatLoading extends ChatState {}
 
 class ChatLoaded extends ChatState {
   final List<MessageEntity> messages;
-  const ChatLoaded(this.messages);
+  final bool isUploading;
+
+  const ChatLoaded(this.messages, {this.isUploading = false});
+
+  ChatLoaded copyWith({List<MessageEntity>? messages, bool? isUploading}) {
+    return ChatLoaded(
+      messages ?? this.messages,
+      isUploading: isUploading ?? this.isUploading,
+    );
+  }
 
   @override
-  List<Object?> get props => [messages];
+  List<Object?> get props => [messages, isUploading];
 }
 
 class ChatError extends ChatState {
   final String message;
-  const ChatError(this.message);
+  final List<MessageEntity> messages;
+
+  const ChatError(this.message, {this.messages = const []});
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [message, messages];
 }

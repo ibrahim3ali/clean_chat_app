@@ -1,5 +1,3 @@
-
-
 import '../../../../features.dart';
 
 class ChatConversationModel extends ChatConversationEntity {

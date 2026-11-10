@@ -1,4 +1,10 @@
-import '../../../../features.dart';
+import 'dart:io';
+
+import '../../domain/entities/chat_conversation_entity.dart';
+import '../../domain/entities/message_entity.dart';
+import '../../domain/repositories/chat_repository.dart';
+import '../datasources/chat_remote_data_source.dart';
+import '../../../auth/domain/entities/user_entity.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
   final ChatRemoteDataSource remoteDataSource;
@@ -39,12 +45,31 @@ class ChatRepositoryImpl implements ChatRepository {
     required String currentUserName,
     required String receiverId,
     required String text,
+    String type = 'text',
+    String? mediaUrl,
+    int? mediaDuration,
   }) {
     return remoteDataSource.sendMessage(
       currentUserId: currentUserId,
       currentUserName: currentUserName,
       receiverId: receiverId,
       text: text,
+      type: type,
+      mediaUrl: mediaUrl,
+      mediaDuration: mediaDuration,
+    );
+  }
+
+  @override
+  Future<String> uploadMediaFile({
+    required File file,
+    required String chatId,
+    required String folder,
+  }) {
+    return remoteDataSource.uploadMediaFile(
+      file: file,
+      chatId: chatId,
+      folder: folder,
     );
   }
 }

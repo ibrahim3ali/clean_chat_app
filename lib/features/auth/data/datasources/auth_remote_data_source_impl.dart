@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../../core.dart';
@@ -24,8 +24,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         password: password,
       );
       final user = credential.user;
-      if (user == null)
+      if (user == null) {
         throw const AuthException('فشل في العثور على بيانات المستخدم');
+      }
 
       final doc = await firestore.collection('users').doc(user.uid).get();
       if (doc.exists && doc.data() != null) {

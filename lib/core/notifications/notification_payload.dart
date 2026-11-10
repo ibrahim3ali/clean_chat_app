@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import '../../features.dart';
 
-
 class NotificationPayload {
   final String senderId;
   final String senderName;

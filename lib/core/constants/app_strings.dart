@@ -5,7 +5,8 @@ class AppStrings {
   static const String loginTitle = 'مرحباً بك مجدداً';
   static const String loginSubtitle = 'سجل الدخول للمتابعة والتواصل مع أصدقائك';
   static const String registerTitle = 'إنشاء حساب جديد';
-  static const String registerSubtitle = 'ابدأ المحادثة مع الأصدقاء الآن بسهولة';
+  static const String registerSubtitle =
+      'ابدأ المحادثة مع الأصدقاء الآن بسهولة';
 
   static const String email = 'البريد الإلكتروني';
   static const String password = 'كلمة المرور';
