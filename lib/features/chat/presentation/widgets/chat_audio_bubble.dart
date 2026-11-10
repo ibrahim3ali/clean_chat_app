@@ -1,4 +1,6 @@
-﻿import 'package:audioplayers/audioplayers.dart';
+﻿import 'dart:io';
+
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -21,11 +23,30 @@ class _ChatAudioBubbleState extends State<ChatAudioBubble> {
   Duration _position = Duration.zero;
   Duration _duration = Duration.zero;
 
+  static final _mediaContext = AudioContext(
+    android: const AudioContextAndroid(
+      isSpeakerphoneOn: false,
+      stayAwake: true,
+      contentType: AndroidContentType.music,
+      usageType: AndroidUsageType.media,
+      audioFocus: AndroidAudioFocus.gain,
+      audioMode: AndroidAudioMode.normal,
+    ),
+    iOS: AudioContextIOS(
+      category: AVAudioSessionCategory.playback,
+    ),
+  );
+
   @override
   void initState() {
     super.initState();
     _player = AudioPlayer();
-    if (widget.message.mediaDuration != null) {
+    _initPlayer();
+  }
+
+  void _initPlayer() async {
+    if (widget.message.mediaDuration != null &&
+        widget.message.mediaDuration! > 0) {
       _duration = Duration(seconds: widget.message.mediaDuration!);
     }
     _player.onPlayerStateChanged.listen((state) {
@@ -35,7 +56,9 @@ class _ChatAudioBubbleState extends State<ChatAudioBubble> {
       if (mounted) setState(() => _position = pos);
     });
     _player.onDurationChanged.listen((dur) {
-      if (mounted) setState(() => _duration = dur);
+      if (mounted && dur > Duration.zero) {
+        setState(() => _duration = dur);
+      }
     });
     _player.onPlayerComplete.listen((_) {
       if (mounted) {
@@ -45,17 +68,69 @@ class _ChatAudioBubbleState extends State<ChatAudioBubble> {
         });
       }
     });
+
+    try {
+      await _player.setVolume(1.0);
+      await _player.setAudioContext(_mediaContext);
+    } catch (_) {}
   }
 
   void _togglePlay() async {
     final url = widget.message.mediaUrl;
-    if (url == null || url.isEmpty) return;
+    if (url == null || url.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('مسار الملف الصوتي غير صالح')),
+        );
+      }
+      return;
+    }
 
-    final isLocal = !url.startsWith('http://') && !url.startsWith('https://');
-    if (_playerState == PlayerState.playing) {
-      await _player.pause();
-    } else {
-      await _player.play(isLocal ? DeviceFileSource(url) : UrlSource(url));
+    try {
+      if (_playerState == PlayerState.playing) {
+        await _player.pause();
+        return;
+      }
+
+      final isLocal = !url.startsWith('http://') && !url.startsWith('https://');
+      if (isLocal) {
+        final file = File(url);
+        if (!await file.exists()) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('الملف الصوتي غير موجود على الجهاز')),
+            );
+          }
+          return;
+        }
+
+        final size = await file.length();
+        if (size == 0) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('ملف التسجيل الصوتي فارغ (0 بايت)')),
+            );
+          }
+          return;
+        }
+
+        await _player.setAudioContext(_mediaContext);
+        await _player.setVolume(1.0);
+        await _player.play(DeviceFileSource(url));
+      } else {
+        await _player.setAudioContext(_mediaContext);
+        await _player.setVolume(1.0);
+        await _player.play(UrlSource(url));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('خطأ في تشغيل الصوت: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
     }
   }
 
@@ -82,9 +157,8 @@ class _ChatAudioBubbleState extends State<ChatAudioBubble> {
         : 0.0;
 
     return Column(
-      crossAxisAlignment: widget.isMe
-          ? CrossAxisAlignment.end
-          : CrossAxisAlignment.start,
+      crossAxisAlignment:
+          widget.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisSize: MainAxisSize.min,
@@ -113,8 +187,10 @@ class _ChatAudioBubbleState extends State<ChatAudioBubble> {
                   activeColor: iconColor,
                   inactiveColor: iconColor.withValues(alpha: 0.3),
                   onChanged: (val) {
-                    final target = _duration * val;
-                    _player.seek(target);
+                    if (_duration > Duration.zero) {
+                      final target = _duration * val;
+                      _player.seek(target);
+                    }
                   },
                 ),
               ),

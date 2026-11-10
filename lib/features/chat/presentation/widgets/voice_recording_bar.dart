@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -41,8 +41,9 @@ class _VoiceRecordingBarState extends State<VoiceRecordingBar> {
   void _finish() async {
     _timer?.cancel();
     final result = await widget.recorder.stopRecording();
-    if (result != null && result.durationSeconds > 0) {
-      widget.onRecordingComplete(result.file, result.durationSeconds);
+    if (result != null && await result.file.exists()) {
+      final dur = result.durationSeconds > 0 ? result.durationSeconds : 1;
+      widget.onRecordingComplete(result.file, dur);
     } else {
       widget.onCancel();
     }

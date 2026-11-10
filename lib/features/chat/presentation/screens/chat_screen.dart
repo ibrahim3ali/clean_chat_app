@@ -124,7 +124,32 @@ class _ChatScreenState extends State<ChatScreen> {
                           : const <MessageEntity>[]);
 
                   if (messages.isEmpty) {
-                    if (state is ChatError) return const SizedBox.shrink();
+                    if (state is ChatError) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.error_outline_rounded,
+                                size: 48,
+                                color: AppColors.error,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                state.message,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
                     return const ChatEmptyMessagesState();
                   }
                   return ChatMessagesList(
