@@ -13,7 +13,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
 
     <application
-        android:label="clean_chat_app"
+        android:label="TOT Chat"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:enableOnBackInvokedCallback="true">

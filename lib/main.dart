@@ -41,7 +41,7 @@ class CleanChatApp extends StatelessWidget {
       child: BlocBuilder<LocaleCubit, Locale>(
         builder: (context, currentLocale) {
           return MaterialApp.router(
-            title: 'Clean Chat',
+            // title: 'TOT Chat',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             routerConfig: AppRouter.router,
