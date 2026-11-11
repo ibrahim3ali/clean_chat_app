@@ -51,30 +51,15 @@ class UserListTile extends StatelessWidget {
             name: conversation.otherUserName,
             isOnline: conversation.isOnline,
           ),
-          title: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  conversation.otherUserName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-              ),
-              if (conversation.lastMessageTime != null)
-                Text(
-                  DateFormatter.formatChatDate(conversation.lastMessageTime!),
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textMuted,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-            ],
+          title: Text(
+            conversation.otherUserName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: AppColors.textPrimary,
+            ),
           ),
           subtitle: Padding(
             padding: const EdgeInsets.only(top: 4.0),
@@ -91,11 +76,16 @@ class UserListTile extends StatelessWidget {
               ),
             ),
           ),
-          trailing: const Icon(
-            Icons.arrow_forward_ios_rounded,
-            size: 14,
-            color: AppColors.textMuted,
-          ),
+          trailing: (conversation.lastMessageTime != null)
+              ? Text(
+                  DateFormatter.formatChatDate(conversation.lastMessageTime!),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: AppColors.textMuted,
+                    fontWeight: FontWeight.w500,
+                  ),
+                )
+              : null,
         ),
       ),
     );
