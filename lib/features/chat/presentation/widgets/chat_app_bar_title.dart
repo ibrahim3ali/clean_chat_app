@@ -15,6 +15,10 @@ class ChatAppBarTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final nameColor =
+        isDark ? AppColors.darkTextPrimary : AppColors.textPrimary;
+
     return Row(
       children: [
         CircleAvatar(
@@ -37,10 +41,10 @@ class ChatAppBarTitle extends StatelessWidget {
           children: [
             Text(
               otherUser.name,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: nameColor,
               ),
             ),
             StreamBuilder<bool>(

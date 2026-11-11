@@ -1,4 +1,4 @@
-﻿import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -9,6 +9,7 @@ import 'core/localization/app_localizations.dart';
 import 'core/localization/locale_cubit.dart';
 import 'core/routes/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/theme_cubit.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/chat/presentation/cubit/chat_cubit.dart';
 import 'features/chat/presentation/cubit/users_cubit.dart';
@@ -32,6 +33,7 @@ class CleanChatApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<LocaleCubit>(create: (_) => ServiceLocator.localeCubit),
+        BlocProvider<ThemeCubit>(create: (_) => ServiceLocator.themeCubit),
         BlocProvider<AuthCubit>(
           create: (_) => ServiceLocator.authCubit..checkAuthStatus(),
         ),
@@ -40,19 +42,25 @@ class CleanChatApp extends StatelessWidget {
       ],
       child: BlocBuilder<LocaleCubit, Locale>(
         builder: (context, currentLocale) {
-          return MaterialApp.router(
-            // title: 'TOT Chat',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.lightTheme,
-            routerConfig: AppRouter.router,
-            locale: currentLocale,
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
+          return BlocBuilder<ThemeCubit, ThemeMode>(
+            builder: (context, currentThemeMode) {
+              return MaterialApp.router(
+                // title: 'TOT Chat',
+                debugShowCheckedModeBanner: false,
+                theme: AppTheme.lightTheme,
+                darkTheme: AppTheme.darkTheme,
+                themeMode: currentThemeMode,
+                routerConfig: AppRouter.router,
+                locale: currentLocale,
+                supportedLocales: AppLocalizations.supportedLocales,
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+              );
+            },
           );
         },
       ),

@@ -16,6 +16,11 @@ class AuthHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final logoAsset = isDark
+        ? 'assets/images/app_logo_dark.png'
+        : 'assets/images/app_logo.png';
+
     return Column(
       children: [
         Container(
@@ -25,20 +30,26 @@ class AuthHeader extends StatelessWidget {
             borderRadius: BorderRadius.circular(22),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.25),
-                blurRadius: 16,
+                color: isDark
+                    ? AppColors.secondary.withValues(alpha: 0.35)
+                    : AppColors.primary.withValues(alpha: 0.25),
+                blurRadius: isDark ? 20 : 16,
                 offset: const Offset(0, 6),
               ),
             ],
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(22),
-            child: Image.asset(
-              'assets/images/app_logo.png',
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                color: AppColors.primary.withValues(alpha: 0.1),
-                child: Icon(icon, size: 40, color: AppColors.primary),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: Image.asset(
+                logoAsset,
+                key: ValueKey(logoAsset),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  child: Icon(icon, size: 40, color: AppColors.primary),
+                ),
               ),
             ),
           ),
@@ -47,17 +58,22 @@ class AuthHeader extends StatelessWidget {
         Text(
           title,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           subtitle,
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
+          style: TextStyle(
+            fontSize: 14,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkTextSecondary
+                : AppColors.textSecondary,
+          ),
         ),
       ],
     );

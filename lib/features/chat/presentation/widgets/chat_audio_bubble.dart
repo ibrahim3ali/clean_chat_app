@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -149,8 +149,13 @@ class _ChatAudioBubbleState extends State<ChatAudioBubble> {
   @override
   Widget build(BuildContext context) {
     final isPlaying = _playerState == PlayerState.playing;
-    final iconColor = widget.isMe ? Colors.white : AppColors.primary;
-    final textColor = widget.isMe ? Colors.white70 : AppColors.textMuted;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final iconColor = widget.isMe
+        ? Colors.white
+        : (isDark ? AppColors.secondary : AppColors.primary);
+    final textColor = widget.isMe
+        ? Colors.white70
+        : (isDark ? AppColors.darkTextSecondary : AppColors.textMuted);
 
     final progress = _duration.inMilliseconds > 0
         ? (_position.inMilliseconds / _duration.inMilliseconds).clamp(0.0, 1.0)

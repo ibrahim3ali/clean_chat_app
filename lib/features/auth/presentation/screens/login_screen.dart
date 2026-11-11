@@ -40,7 +40,10 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        actions: const [LanguageToggleButton()],
+        actions: const [
+          ThemeToggleButton(),
+          LanguageToggleButton(),
+        ],
       ),
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {

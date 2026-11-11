@@ -83,4 +83,5 @@ class ServiceLocator {
   );
 
   static LocaleCubit get localeCubit => LocaleCubit();
+  static ThemeCubit get themeCubit => ThemeCubit();
 }

@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -98,6 +98,7 @@ class _ChatScreenState extends State<ChatScreen> {
             otherUser: widget.otherUser,
             typingStream: _typingStream,
           ),
+          actions: const [ThemeToggleButton()],
         ),
         body: Column(
           children: [
@@ -140,8 +141,11 @@ class _ChatScreenState extends State<ChatScreen> {
                               Text(
                                 state.message,
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  color: AppColors.textSecondary,
+                                style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.darkTextSecondary
+                                      : AppColors.textSecondary,
                                   fontSize: 14,
                                 ),
                               ),
@@ -162,12 +166,15 @@ class _ChatScreenState extends State<ChatScreen> {
             BlocBuilder<ChatCubit, ChatState>(
               builder: (context, state) {
                 if (state is ChatLoaded && state.isUploading) {
+                  final isDark = Theme.of(context).brightness == Brightness.dark;
                   return Container(
                     padding: const EdgeInsets.symmetric(
                       vertical: 4,
                       horizontal: 16,
                     ),
-                    color: AppColors.primaryLight,
+                    color: isDark
+                        ? AppColors.darkSurfaceVariant
+                        : AppColors.primaryLight,
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

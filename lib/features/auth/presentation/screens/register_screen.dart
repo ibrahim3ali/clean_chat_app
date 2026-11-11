@@ -42,7 +42,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(context.tr('registerTitle')),
-        actions: const [LanguageToggleButton()],
+        actions: const [
+          ThemeToggleButton(),
+          LanguageToggleButton(),
+        ],
       ),
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {

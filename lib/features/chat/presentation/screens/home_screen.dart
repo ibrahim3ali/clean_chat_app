@@ -38,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: AppBar(
           title: Text(context.tr('homeTitle')),
           actions: [
+            const ThemeToggleButton(),
             const LanguageToggleButton(),
             IconButton(
               icon: const Icon(Icons.logout_rounded),
@@ -67,10 +68,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: Text(
                     context.tr('recentChats'),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.darkTextSecondary
+                          : AppColors.textSecondary,
                     ),
                   ),
                 ),

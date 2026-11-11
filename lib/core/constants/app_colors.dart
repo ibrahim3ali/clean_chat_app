@@ -20,4 +20,14 @@ class AppColors {
 
   static const Color error = Color(0xFFE53935);
   static const Color border = Color(0xFFE2E8F0);
+
+  // Dark Theme Palette
+  static const Color darkBackground = Color(0xFF0F172A);
+  static const Color darkSurface = Color(0xFF1E293B);
+  static const Color darkSurfaceVariant = Color(0xFF334155);
+  static const Color darkBorder = Color(0xFF334155);
+  static const Color darkTextPrimary = Color(0xFFF8FAFC);
+  static const Color darkTextSecondary = Color(0xFF94A3B8);
+  static const Color darkTextMuted = Color(0xFF64748B);
+  static const Color darkReceivedMessage = Color(0xFF1E293B);
 }

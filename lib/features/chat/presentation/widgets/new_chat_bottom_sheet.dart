@@ -13,7 +13,6 @@ class NewChatBottomSheet extends StatefulWidget {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -96,10 +95,10 @@ class _NewChatBottomSheetState extends State<NewChatBottomSheet> {
             children: [
               Text(
                 context.tr('startNewChat'),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               IconButton(
@@ -112,9 +111,11 @@ class _NewChatBottomSheetState extends State<NewChatBottomSheet> {
           const SizedBox(height: 8),
           Text(
             context.tr('enterEmailPrompt'),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: AppColors.textSecondary,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkTextSecondary
+                  : AppColors.textSecondary,
             ),
           ),
           const SizedBox(height: 18),

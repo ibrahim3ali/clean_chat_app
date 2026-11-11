@@ -13,7 +13,7 @@ class ChatBubble extends StatelessWidget {
 
   const ChatBubble({super.key, required this.message, required this.isMe});
 
-  Widget _buildContent() {
+  Widget _buildContent(BuildContext context) {
     if (message.isImage) {
       return ChatImageBubble(message: message, isMe: isMe);
     }
@@ -24,6 +24,14 @@ class ChatBubble extends StatelessWidget {
       return ChatAudioBubble(message: message, isMe: isMe);
     }
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isMe
+        ? Colors.white
+        : (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary);
+    final timeColor = isMe
+        ? Colors.white70
+        : (isDark ? AppColors.darkTextSecondary : AppColors.textMuted);
+
     return Column(
       crossAxisAlignment: isMe
           ? CrossAxisAlignment.end
@@ -33,7 +41,7 @@ class ChatBubble extends StatelessWidget {
         Text(
           message.text,
           style: TextStyle(
-            color: isMe ? Colors.white : AppColors.textPrimary,
+            color: textColor,
             fontSize: 15,
             height: 1.3,
           ),
@@ -42,7 +50,7 @@ class ChatBubble extends StatelessWidget {
         Text(
           DateFormatter.formatTime(message.timestamp),
           style: TextStyle(
-            color: isMe ? Colors.white70 : AppColors.textMuted,
+            color: timeColor,
             fontSize: 11,
           ),
         ),
@@ -52,6 +60,11 @@ class ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bubbleColor = isMe
+        ? AppColors.sentMessage
+        : (isDark ? AppColors.darkSurfaceVariant : AppColors.receivedMessage);
+
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -61,7 +74,7 @@ class ChatBubble extends StatelessWidget {
           maxWidth: MediaQuery.of(context).size.width * 0.75,
         ),
         decoration: BoxDecoration(
-          color: isMe ? AppColors.sentMessage : AppColors.receivedMessage,
+          color: bubbleColor,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(16),
             topRight: const Radius.circular(16),
@@ -76,7 +89,7 @@ class ChatBubble extends StatelessWidget {
             ),
           ],
         ),
-        child: _buildContent(),
+        child: _buildContent(context),
       ),
     );
   }
