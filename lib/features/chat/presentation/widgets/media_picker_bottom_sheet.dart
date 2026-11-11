@@ -2,18 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/services/media_picker_service.dart';
+import '../../../../core.dart';
 
 class MediaPickerBottomSheet extends StatelessWidget {
-  final Function(File file, String type) onMediaSelected;
+  final Function(File file, String type, {int? duration}) onMediaSelected;
   final MediaPickerService _picker = MediaPickerService();
 
   MediaPickerBottomSheet({super.key, required this.onMediaSelected});
 
   static Future<void> show(
     BuildContext context, {
-    required Function(File file, String type) onMediaSelected,
+    required Function(File file, String type, {int? duration}) onMediaSelected,
   }) {
     return showModalBottomSheet(
       context: context,
@@ -32,7 +31,11 @@ class MediaPickerBottomSheet extends StatelessWidget {
     Navigator.of(context).pop();
     final file = await picker();
     if (file != null) {
-      onMediaSelected(file, type);
+      int? duration;
+      if (type == 'video') {
+        duration = await _picker.getVideoDuration(file);
+      }
+      onMediaSelected(file, type, duration: duration);
     }
   }
 
@@ -41,7 +44,7 @@ class MediaPickerBottomSheet extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -55,28 +58,36 @@ class MediaPickerBottomSheet extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildOption(
                   context,
                   icon: Icons.camera_alt_rounded,
-                  label: 'كاميرا',
+                  label: context.tr('takePhoto'),
                   color: Colors.pink,
                   onTap: () =>
                       _pick(context, _picker.pickImageFromCamera, 'image'),
                 ),
                 _buildOption(
                   context,
+                  icon: Icons.videocam_rounded,
+                  label: context.tr('recordVideo'),
+                  color: Colors.deepOrange,
+                  onTap: () =>
+                      _pick(context, _picker.pickVideoFromCamera, 'video'),
+                ),
+                _buildOption(
+                  context,
                   icon: Icons.photo_library_rounded,
-                  label: 'الصور',
+                  label: context.tr('photoGallery'),
                   color: Colors.purple,
                   onTap: () =>
                       _pick(context, _picker.pickImageFromGallery, 'image'),
                 ),
                 _buildOption(
                   context,
-                  icon: Icons.videocam_rounded,
-                  label: 'فيديو',
+                  icon: Icons.video_library_rounded,
+                  label: context.tr('videoGallery'),
                   color: Colors.teal,
                   onTap: () =>
                       _pick(context, _picker.pickVideoFromGallery, 'video'),
@@ -100,19 +111,21 @@ class MediaPickerBottomSheet extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             CircleAvatar(
-              radius: 28,
+              radius: 26,
               backgroundColor: color.withValues(alpha: 0.15),
-              child: Icon(icon, color: color, size: 28),
+              child: Icon(icon, color: color, size: 26),
             ),
             const SizedBox(height: 8),
             Text(
               label,
+              textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: Theme.of(context).colorScheme.onSurface,
               ),

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:image_picker/image_picker.dart';
+import 'package:video_player/video_player.dart';
 
 class MediaPickerService {
   final ImagePicker _picker = ImagePicker();
@@ -32,12 +33,24 @@ class MediaPickerService {
     return File(xFile.path);
   }
 
-  Future<File?> pickVideoFromCamera() async {
+  Future<File?> pickVideoFromCamera({Duration? maxDuration}) async {
     final xFile = await _picker.pickVideo(
       source: ImageSource.camera,
-      maxDuration: const Duration(minutes: 5),
+      maxDuration: maxDuration ?? const Duration(minutes: 5),
     );
     if (xFile == null) return null;
     return File(xFile.path);
+  }
+
+  Future<int?> getVideoDuration(File file) async {
+    try {
+      final controller = VideoPlayerController.file(file);
+      await controller.initialize();
+      final duration = controller.value.duration.inSeconds;
+      await controller.dispose();
+      return duration;
+    } catch (_) {
+      return null;
+    }
   }
 }

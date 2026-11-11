@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -34,6 +34,13 @@ class _ChatVideoBubbleState extends State<ChatVideoBubble> {
       _controller!.initialize().then((_) {
         if (mounted) setState(() => _isInitialized = true);
       });
+      _controller!.addListener(() {
+        if (mounted &&
+            _controller!.value.position >= _controller!.value.duration &&
+            !_controller!.value.isPlaying) {
+          setState(() {});
+        }
+      });
     }
   }
 
@@ -42,6 +49,12 @@ class _ChatVideoBubbleState extends State<ChatVideoBubble> {
     setState(() {
       _controller!.value.isPlaying ? _controller!.pause() : _controller!.play();
     });
+  }
+
+  String _formatDuration(Duration d) {
+    final minutes = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '$minutes:$seconds';
   }
 
   @override
@@ -53,6 +66,13 @@ class _ChatVideoBubbleState extends State<ChatVideoBubble> {
   @override
   Widget build(BuildContext context) {
     final maxWidth = MediaQuery.of(context).size.width * 0.72;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final captionColor = widget.isMe
+        ? Colors.white
+        : (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary);
+    final timeColor = widget.isMe
+        ? Colors.white70
+        : (isDark ? AppColors.darkTextSecondary : AppColors.textMuted);
 
     return Column(
       crossAxisAlignment:
@@ -80,7 +100,7 @@ class _ChatVideoBubbleState extends State<ChatVideoBubble> {
                   onTap: _togglePlay,
                   child: CircleAvatar(
                     radius: 28,
-                    backgroundColor: Colors.black45,
+                    backgroundColor: Colors.black54,
                     child: Icon(
                       _controller?.value.isPlaying == true
                           ? Icons.pause
@@ -90,6 +110,40 @@ class _ChatVideoBubbleState extends State<ChatVideoBubble> {
                     ),
                   ),
                 ),
+                if (_isInitialized && _controller != null)
+                  Positioned(
+                    bottom: 8,
+                    left: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black54,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.videocam_rounded,
+                            size: 13,
+                            color: Colors.white70,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            _formatDuration(_controller!.value.duration),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -98,19 +152,13 @@ class _ChatVideoBubbleState extends State<ChatVideoBubble> {
           const SizedBox(height: 6),
           Text(
             widget.message.text,
-            style: TextStyle(
-              color: widget.isMe ? Colors.white : AppColors.textPrimary,
-              fontSize: 14,
-            ),
+            style: TextStyle(color: captionColor, fontSize: 14),
           ),
         ],
         const SizedBox(height: 4),
         Text(
           DateFormatter.formatTime(widget.message.timestamp),
-          style: TextStyle(
-            color: widget.isMe ? Colors.white70 : AppColors.textMuted,
-            fontSize: 11,
-          ),
+          style: TextStyle(color: timeColor, fontSize: 11),
         ),
       ],
     );

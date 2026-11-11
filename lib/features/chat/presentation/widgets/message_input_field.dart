@@ -68,9 +68,117 @@ class _MessageInputFieldState extends State<MessageInputField> {
   void _openAttachmentPicker() {
     MediaPickerBottomSheet.show(
       context,
-      onMediaSelected: (file, type) {
-        widget.onSendMedia(file, type);
+      onMediaSelected: (file, type, {duration}) {
+        widget.onSendMedia(file, type, duration: duration);
       },
+    );
+  }
+
+  void _openCameraPicker() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        final isDark = Theme.of(ctx).brightness == Brightness.dark;
+        final picker = MediaPickerService();
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: isDark ? AppColors.darkBorder : Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  context.tr('camera'),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(ctx).colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildCameraAction(
+                      ctx,
+                      icon: Icons.camera_alt_rounded,
+                      label: context.tr('takePhoto'),
+                      color: Colors.pink,
+                      onTap: () async {
+                        Navigator.of(ctx).pop();
+                        final file = await picker.pickImageFromCamera();
+                        if (file != null) {
+                          widget.onSendMedia(file, 'image');
+                        }
+                      },
+                    ),
+                    _buildCameraAction(
+                      ctx,
+                      icon: Icons.videocam_rounded,
+                      label: context.tr('recordVideo'),
+                      color: Colors.deepOrange,
+                      onTap: () async {
+                        Navigator.of(ctx).pop();
+                        final file = await picker.pickVideoFromCamera();
+                        if (file != null) {
+                          final dur = await picker.getVideoDuration(file);
+                          widget.onSendMedia(file, 'video', duration: dur);
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildCameraAction(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircleAvatar(
+              radius: 28,
+              backgroundColor: color.withValues(alpha: 0.15),
+              child: Icon(icon, color: color, size: 28),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -98,7 +206,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
     final borderColor = isDark ? AppColors.darkBorder : AppColors.border;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
         color: containerBg,
         boxShadow: [
@@ -151,7 +259,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: 4),
                   if (_controller.text.trim().isNotEmpty)
                     IconButton.filled(
                       onPressed: _send,
@@ -161,7 +269,15 @@ class _MessageInputFieldState extends State<MessageInputField> {
                         foregroundColor: Colors.white,
                       ),
                     )
-                  else
+                  else ...[
+                    IconButton(
+                      icon: const Icon(
+                        Icons.camera_alt_outlined,
+                        color: AppColors.primary,
+                      ),
+                      tooltip: context.tr('camera'),
+                      onPressed: _openCameraPicker,
+                    ),
                     IconButton.filled(
                       onPressed: _startVoiceRecording,
                       icon: const Icon(Icons.mic, size: 20),
@@ -170,6 +286,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
                         foregroundColor: Colors.white,
                       ),
                     ),
+                  ],
                 ],
               ),
       ),

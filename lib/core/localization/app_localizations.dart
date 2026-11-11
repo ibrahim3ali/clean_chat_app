@@ -60,6 +60,11 @@ class AppLocalizations {
       'systemModeDesc': 'يتغير تلقائياً مع إعدادات هاتفك',
       'lightModeDesc': 'المظهر الفاتح الكلاسيكي',
       'darkModeDesc': 'المظهر الداكن المريح للعين',
+      'takePhoto': 'التقاط صورة',
+      'recordVideo': 'تسجيل فيديو',
+      'photoGallery': 'معرض الصور',
+      'videoGallery': 'معرض الفيديو',
+      'camera': 'الكاميرا',
     },
     'en': {
       'appTitle': 'Clean Chat',
@@ -107,6 +112,11 @@ class AppLocalizations {
       'systemModeDesc': 'Follows your phone system appearance',
       'lightModeDesc': 'Classic bright appearance',
       'darkModeDesc': 'Dark appearance easy on the eyes',
+      'takePhoto': 'Take Photo',
+      'recordVideo': 'Record Video',
+      'photoGallery': 'Photo Gallery',
+      'videoGallery': 'Video Gallery',
+      'camera': 'Camera',
     },
   };
 
