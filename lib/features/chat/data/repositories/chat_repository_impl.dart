@@ -72,4 +72,32 @@ class ChatRepositoryImpl implements ChatRepository {
       folder: folder,
     );
   }
+
+  @override
+  Future<void> deleteMessage({
+    required String chatId,
+    required String messageId,
+    required String currentUserId,
+    required bool deleteForEveryone,
+  }) {
+    return remoteDataSource.deleteMessage(
+      chatId: chatId,
+      messageId: messageId,
+      currentUserId: currentUserId,
+      deleteForEveryone: deleteForEveryone,
+    );
+  }
+
+  @override
+  Future<void> clearChat({
+    required String chatId,
+    required String currentUserId,
+    required bool deleteForEveryone,
+  }) {
+    return remoteDataSource.clearChat(
+      chatId: chatId,
+      currentUserId: currentUserId,
+      deleteForEveryone: deleteForEveryone,
+    );
+  }
 }

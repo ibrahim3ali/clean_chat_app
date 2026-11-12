@@ -25,6 +25,8 @@ class ServiceLocator {
   static late final GetMessagesStreamUseCase getMessagesStreamUseCase;
   static late final SendMessageUseCase sendMessageUseCase;
   static late final SendMediaMessageUseCase sendMediaMessageUseCase;
+  static late final DeleteMessageUseCase deleteMessageUseCase;
+  static late final ClearChatUseCase clearChatUseCase;
 
   // Notifications
   static late final NotificationService notificationService;
@@ -62,6 +64,8 @@ class ServiceLocator {
     getMessagesStreamUseCase = GetMessagesStreamUseCase(chatRepository);
     sendMessageUseCase = SendMessageUseCase(chatRepository);
     sendMediaMessageUseCase = SendMediaMessageUseCase(chatRepository);
+    deleteMessageUseCase = DeleteMessageUseCase(chatRepository);
+    clearChatUseCase = ClearChatUseCase(chatRepository);
   }
 
   static AuthCubit get authCubit => AuthCubit(
@@ -80,6 +84,8 @@ class ServiceLocator {
     getMessagesStreamUseCase: getMessagesStreamUseCase,
     sendMessageUseCase: sendMessageUseCase,
     sendMediaMessageUseCase: sendMediaMessageUseCase,
+    deleteMessageUseCase: deleteMessageUseCase,
+    clearChatUseCase: clearChatUseCase,
   );
 
   static LocaleCubit get localeCubit => LocaleCubit();

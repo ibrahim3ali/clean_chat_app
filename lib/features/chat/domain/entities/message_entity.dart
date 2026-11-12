@@ -10,6 +10,7 @@ class MessageEntity extends Equatable {
   final String? mediaUrl;
   final int? mediaDuration;
   final DateTime timestamp;
+  final List<String> deletedFor;
 
   const MessageEntity({
     required this.id,
@@ -21,6 +22,7 @@ class MessageEntity extends Equatable {
     this.mediaUrl,
     this.mediaDuration,
     required this.timestamp,
+    this.deletedFor = const [],
   });
 
   bool get isText => type == 'text';
@@ -39,5 +41,6 @@ class MessageEntity extends Equatable {
     mediaUrl,
     mediaDuration,
     timestamp,
+    deletedFor,
   ];
 }

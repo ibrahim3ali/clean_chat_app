@@ -98,7 +98,48 @@ class _ChatScreenState extends State<ChatScreen> {
             otherUser: widget.otherUser,
             typingStream: _typingStream,
           ),
-          actions: const [ThemeToggleButton()],
+          actions: [
+            const ThemeToggleButton(),
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert_rounded),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              onSelected: (value) {
+                if (value == 'clear') {
+                  ClearChatDialog.show(
+                    context,
+                    onClear: (deleteForEveryone) {
+                      context.read<ChatCubit>().clearChat(
+                        chatId: _chatId,
+                        currentUserId: widget.currentUser.uid,
+                        deleteForEveryone: deleteForEveryone,
+                      );
+                    },
+                  );
+                }
+              },
+              itemBuilder: (context) => [
+                PopupMenuItem<String>(
+                  value: 'clear',
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.cleaning_services_rounded,
+                        color: AppColors.error,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        context.tr('clearChat'),
+                        style: const TextStyle(color: AppColors.error),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
         body: Column(
           children: [
@@ -159,6 +200,14 @@ class _ChatScreenState extends State<ChatScreen> {
                   return ChatMessagesList(
                     messages: messages,
                     currentUserId: widget.currentUser.uid,
+                    onDeleteMessage: (msg, deleteForEveryone) {
+                      context.read<ChatCubit>().deleteMessage(
+                        chatId: _chatId,
+                        messageId: msg.id,
+                        currentUserId: widget.currentUser.uid,
+                        deleteForEveryone: deleteForEveryone,
+                      );
+                    },
                   );
                 },
               ),

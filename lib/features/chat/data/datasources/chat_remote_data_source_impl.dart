@@ -81,7 +81,10 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         .orderBy('timestamp', descending: true)
         .snapshots()
         .map(
-          (s) => s.docs.map((doc) => MessageModel.fromFirestore(doc)).toList(),
+          (s) => s.docs
+              .map((doc) => MessageModel.fromFirestore(doc))
+              .where((msg) => !msg.deletedFor.contains(currentUserId))
+              .toList(),
         );
   }
 
@@ -119,6 +122,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         'lastUpdated': FieldValue.serverTimestamp(),
         'lastSenderId': currentUserId,
         'participants': [currentUserId, receiverId],
+        'clearedBy': [],
       }, SetOptions(merge: true));
 
       _fcmSender.sendPushNotification(
@@ -131,6 +135,109 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     } catch (e) {
       throw ServerException('فشل في إرسال الرسالة: $e');
     }
+  }
+
+  @override
+  Future<void> deleteMessage({
+    required String chatId,
+    required String messageId,
+    required String currentUserId,
+    required bool deleteForEveryone,
+  }) async {
+    try {
+      final docRef = firestore
+          .collection('chats')
+          .doc(chatId)
+          .collection('messages')
+          .doc(messageId);
+
+      if (deleteForEveryone) {
+        await docRef.delete();
+      } else {
+        await docRef.set({
+          'deletedFor': FieldValue.arrayUnion([currentUserId]),
+        }, SetOptions(merge: true));
+      }
+
+      await _updateChatPreviewAfterDeletion(chatId);
+    } catch (e) {
+      throw ServerException('فشل في حذف الرسالة: $e');
+    }
+  }
+
+  @override
+  Future<void> clearChat({
+    required String chatId,
+    required String currentUserId,
+    required bool deleteForEveryone,
+  }) async {
+    try {
+      final messagesSnap = await firestore
+          .collection('chats')
+          .doc(chatId)
+          .collection('messages')
+          .get();
+
+      final batch = firestore.batch();
+      for (final doc in messagesSnap.docs) {
+        if (deleteForEveryone) {
+          batch.delete(doc.reference);
+        } else {
+          batch.set(
+            doc.reference,
+            {'deletedFor': FieldValue.arrayUnion([currentUserId])},
+            SetOptions(merge: true),
+          );
+        }
+      }
+
+      final chatDoc = firestore.collection('chats').doc(chatId);
+      if (deleteForEveryone) {
+        batch.update(chatDoc, {'lastMessage': ''});
+      } else {
+        batch.set(
+          chatDoc,
+          {'clearedBy': FieldValue.arrayUnion([currentUserId])},
+          SetOptions(merge: true),
+        );
+      }
+
+      await batch.commit();
+    } catch (e) {
+      throw ServerException('فشل في مسح المحادثة: $e');
+    }
+  }
+
+  Future<void> _updateChatPreviewAfterDeletion(String chatId) async {
+    try {
+      final remaining = await firestore
+          .collection('chats')
+          .doc(chatId)
+          .collection('messages')
+          .orderBy('timestamp', descending: true)
+          .limit(1)
+          .get();
+
+      final chatDoc = firestore.collection('chats').doc(chatId);
+      if (remaining.docs.isEmpty) {
+        await chatDoc.update({'lastMessage': ''});
+      } else {
+        final doc = remaining.docs.first;
+        final data = doc.data();
+        final type = data['type'] as String? ?? 'text';
+        final text = data['text'] as String? ?? '';
+        String preview = text.trim();
+        if (type == 'image') preview = preview.isNotEmpty ? preview : '📷 صورة';
+        if (type == 'video') preview = preview.isNotEmpty ? preview : '🎥 فيديو';
+        if (type == 'audio') preview = '🎤 تسجيل صوتي';
+
+        await chatDoc.update({
+          'lastMessage': preview,
+          'lastUpdated': data['timestamp'] ?? FieldValue.serverTimestamp(),
+          'lastSenderId': data['senderId'] ?? '',
+        });
+      }
+    } catch (_) {}
   }
 
   @override

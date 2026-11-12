@@ -23,6 +23,9 @@ class ConversationsStreamHandler {
         final chatData = chatsMap[user.uid];
         if (chatData == null) continue;
 
+        final clearedBy = List<String>.from(chatData['clearedBy'] ?? []);
+        if (clearedBy.contains(currentUserId)) continue;
+
         final lastMsg = (chatData['lastMessage'] as String? ?? '').trim();
         if (lastMsg.isEmpty) continue;
 

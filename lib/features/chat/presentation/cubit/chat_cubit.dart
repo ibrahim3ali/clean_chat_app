@@ -1,9 +1,11 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/entities/message_entity.dart';
+import '../../domain/usecases/clear_chat_usecase.dart';
+import '../../domain/usecases/delete_message_usecase.dart';
 import '../../domain/usecases/get_messages_stream_usecase.dart';
 import '../../domain/usecases/send_media_message_usecase.dart';
 import '../../domain/usecases/send_message_usecase.dart';
@@ -13,6 +15,8 @@ class ChatCubit extends Cubit<ChatState> {
   final GetMessagesStreamUseCase getMessagesStreamUseCase;
   final SendMessageUseCase sendMessageUseCase;
   final SendMediaMessageUseCase sendMediaMessageUseCase;
+  final DeleteMessageUseCase deleteMessageUseCase;
+  final ClearChatUseCase clearChatUseCase;
   StreamSubscription? _messagesSubscription;
 
   final List<MessageEntity> _sessionMediaMessages = [];
@@ -22,6 +26,8 @@ class ChatCubit extends Cubit<ChatState> {
     required this.getMessagesStreamUseCase,
     required this.sendMessageUseCase,
     required this.sendMediaMessageUseCase,
+    required this.deleteMessageUseCase,
+    required this.clearChatUseCase,
   }) : super(ChatInitial());
 
   void listenToMessages({
@@ -52,7 +58,6 @@ class ChatCubit extends Cubit<ChatState> {
     required String receiverId,
     required String text,
   }) async {
-    if (text.trim().isEmpty) return;
     try {
       await sendMessageUseCase(
         currentUserId: currentUserId,
@@ -88,6 +93,44 @@ class ChatCubit extends Cubit<ChatState> {
 
     _sessionMediaMessages.add(tempMessage);
     _emitCombinedMessages();
+  }
+
+  Future<void> deleteMessage({
+    required String chatId,
+    required String messageId,
+    required String currentUserId,
+    required bool deleteForEveryone,
+  }) async {
+    try {
+      _sessionMediaMessages.removeWhere((m) => m.id == messageId);
+      _emitCombinedMessages();
+      await deleteMessageUseCase(
+        chatId: chatId,
+        messageId: messageId,
+        currentUserId: currentUserId,
+        deleteForEveryone: deleteForEveryone,
+      );
+    } catch (e) {
+      emit(ChatError(e.toString(), messages: _allCombinedMessages));
+    }
+  }
+
+  Future<void> clearChat({
+    required String chatId,
+    required String currentUserId,
+    required bool deleteForEveryone,
+  }) async {
+    try {
+      _sessionMediaMessages.clear();
+      _emitCombinedMessages();
+      await clearChatUseCase(
+        chatId: chatId,
+        currentUserId: currentUserId,
+        deleteForEveryone: deleteForEveryone,
+      );
+    } catch (e) {
+      emit(ChatError(e.toString(), messages: _allCombinedMessages));
+    }
   }
 
   void clearSessionMedia() {

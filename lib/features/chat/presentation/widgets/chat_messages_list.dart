@@ -5,11 +5,13 @@ import '../../../../features.dart';
 class ChatMessagesList extends StatelessWidget {
   final List<MessageEntity> messages;
   final String currentUserId;
+  final Function(MessageEntity message, bool deleteForEveryone) onDeleteMessage;
 
   const ChatMessagesList({
     super.key,
     required this.messages,
     required this.currentUserId,
+    required this.onDeleteMessage,
   });
 
   @override
@@ -20,9 +22,19 @@ class ChatMessagesList extends StatelessWidget {
       itemCount: messages.length,
       itemBuilder: (context, index) {
         final message = messages[index];
+        final isMe = message.senderId == currentUserId;
         return ChatBubble(
           message: message,
-          isMe: message.senderId == currentUserId,
+          isMe: isMe,
+          onLongPress: () {
+            DeleteMessageDialog.show(
+              context,
+              isMe: isMe,
+              onDelete: (deleteForEveryone) {
+                onDeleteMessage(message, deleteForEveryone);
+              },
+            );
+          },
         );
       },
     );

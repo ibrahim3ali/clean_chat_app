@@ -13,6 +13,7 @@ class MessageModel extends MessageEntity {
     super.mediaUrl,
     super.mediaDuration,
     required super.timestamp,
+    super.deletedFor,
   });
 
   factory MessageModel.fromFirestore(DocumentSnapshot doc) {
@@ -38,6 +39,7 @@ class MessageModel extends MessageEntity {
       mediaUrl: data['mediaUrl'] as String?,
       mediaDuration: data['mediaDuration'] as int?,
       timestamp: parsedTime,
+      deletedFor: List<String>.from(data['deletedFor'] as List? ?? []),
     );
   }
 
@@ -50,6 +52,7 @@ class MessageModel extends MessageEntity {
       'type': type,
       if (mediaUrl != null) 'mediaUrl': mediaUrl,
       if (mediaDuration != null) 'mediaDuration': mediaDuration,
+      if (deletedFor.isNotEmpty) 'deletedFor': deletedFor,
       'timestamp': FieldValue.serverTimestamp(),
     };
   }

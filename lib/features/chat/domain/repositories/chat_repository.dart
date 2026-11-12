@@ -33,4 +33,17 @@ abstract class ChatRepository {
     required String chatId,
     required String folder,
   });
+
+  Future<void> deleteMessage({
+    required String chatId,
+    required String messageId,
+    required String currentUserId,
+    required bool deleteForEveryone,
+  });
+
+  Future<void> clearChat({
+    required String chatId,
+    required String currentUserId,
+    required bool deleteForEveryone,
+  });
 }
