@@ -2,8 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'firebase_options.dart';
+import 'core/constants/supabase_constants.dart';
 import 'core/di/injection_container.dart';
 import 'core/localization/app_localizations.dart';
 import 'core/localization/locale_cubit.dart';
@@ -17,10 +19,16 @@ import 'features/chat/presentation/cubit/users_cubit.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // ignore: deprecated_member_use
+  await Supabase.initialize(
+    url: SupabaseConstants.supabaseUrl,
+    // ignore: deprecated_member_use
+    anonKey: SupabaseConstants.supabaseAnonKey,
+  );
+
   ServiceLocator.init();
   await ServiceLocator.notificationService.initialize();
-
-
 
   runApp(const CleanChatApp());
 }
@@ -45,7 +53,6 @@ class CleanChatApp extends StatelessWidget {
           return BlocBuilder<ThemeCubit, ThemeMode>(
             builder: (context, currentThemeMode) {
               return MaterialApp.router(
-                // title: 'TOT Chat',
                 debugShowCheckedModeBanner: false,
                 theme: AppTheme.lightTheme,
                 darkTheme: AppTheme.darkTheme,

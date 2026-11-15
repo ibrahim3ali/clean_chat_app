@@ -16,11 +16,9 @@ class MessageModel extends MessageEntity {
     super.deletedFor,
   });
 
-  factory MessageModel.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>? ?? {};
-
+  factory MessageModel.fromMap(Map<String, dynamic> map, String id) {
     DateTime parsedTime;
-    final rawTime = data['timestamp'];
+    final rawTime = map['timestamp'] ?? map['created_at'];
     if (rawTime is Timestamp) {
       parsedTime = rawTime.toDate();
     } else if (rawTime is String) {
@@ -29,18 +27,31 @@ class MessageModel extends MessageEntity {
       parsedTime = DateTime.now();
     }
 
+    final rawDeletedFor = map['deletedFor'] ?? map['deleted_for'];
+    final List<String> parsedDeletedFor = [];
+    if (rawDeletedFor is List) {
+      for (final item in rawDeletedFor) {
+        parsedDeletedFor.add(item.toString());
+      }
+    }
+
     return MessageModel(
-      id: doc.id,
-      senderId: data['senderId'] as String? ?? '',
-      senderName: data['senderName'] as String? ?? '',
-      receiverId: data['receiverId'] as String? ?? '',
-      text: data['text'] as String? ?? '',
-      type: data['type'] as String? ?? 'text',
-      mediaUrl: data['mediaUrl'] as String?,
-      mediaDuration: data['mediaDuration'] as int?,
+      id: id,
+      senderId: (map['senderId'] ?? map['sender_id'] ?? '').toString(),
+      senderName: (map['senderName'] ?? map['sender_name'] ?? '').toString(),
+      receiverId: (map['receiverId'] ?? map['receiver_id'] ?? '').toString(),
+      text: (map['text'] ?? '').toString(),
+      type: (map['type'] ?? 'text').toString(),
+      mediaUrl: (map['mediaUrl'] ?? map['media_url']) as String?,
+      mediaDuration: (map['mediaDuration'] ?? map['media_duration']) as int?,
       timestamp: parsedTime,
-      deletedFor: List<String>.from(data['deletedFor'] as List? ?? []),
+      deletedFor: parsedDeletedFor,
     );
+  }
+
+  factory MessageModel.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>? ?? {};
+    return MessageModel.fromMap(data, doc.id);
   }
 
   Map<String, dynamic> toMap() {
@@ -54,6 +65,20 @@ class MessageModel extends MessageEntity {
       if (mediaDuration != null) 'mediaDuration': mediaDuration,
       if (deletedFor.isNotEmpty) 'deletedFor': deletedFor,
       'timestamp': FieldValue.serverTimestamp(),
+    };
+  }
+
+  Map<String, dynamic> toSupabaseMap(String chatId) {
+    return {
+      'chat_id': chatId,
+      'sender_id': senderId,
+      'sender_name': senderName,
+      'receiver_id': receiverId,
+      'text': text,
+      'type': type,
+      if (mediaUrl != null) 'media_url': mediaUrl,
+      if (mediaDuration != null) 'media_duration': mediaDuration,
+      'deleted_for': deletedFor,
     };
   }
 }

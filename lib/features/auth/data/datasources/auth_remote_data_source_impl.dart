@@ -1,5 +1,6 @@
-﻿import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 
 import '../../../../core.dart';
 import '../../data.dart';
@@ -7,11 +8,13 @@ import '../../data.dart';
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final FirebaseAuth firebaseAuth;
   final FirebaseFirestore firestore;
+  final SupabaseClient supabaseClient;
 
   AuthRemoteDataSourceImpl({
     required this.firebaseAuth,
     required this.firestore,
-  });
+    SupabaseClient? supabaseClient,
+  }) : supabaseClient = supabaseClient ?? Supabase.instance.client;
 
   @override
   Future<UserModel> login({
@@ -28,21 +31,35 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw const AuthException('فشل في العثور على بيانات المستخدم');
       }
 
-      final doc = await firestore.collection('users').doc(user.uid).get();
-      if (doc.exists && doc.data() != null) {
-        await firestore.collection('users').doc(user.uid).update({
-          'isOnline': true,
-        });
-        return UserModel.fromMap(doc.data()!, user.uid);
-      }
-      final newUser = UserModel(
+      final userName =
+          user.displayName ?? email.trim().split('@').first;
+
+      final userModel = UserModel(
         uid: user.uid,
-        email: user.email ?? email,
-        name: user.displayName ?? email.split('@').first,
+        email: user.email ?? email.trim(),
+        name: userName,
         isOnline: true,
       );
-      await firestore.collection('users').doc(user.uid).set(newUser.toMap());
-      return newUser;
+
+      // مزامنة حالة المستخدم وبروفايله مع Supabase
+      try {
+        await supabaseClient.from('profiles').upsert({
+          'id': user.uid,
+          'name': userModel.name,
+          'email': userModel.email,
+          'is_online': true,
+        });
+      } catch (_) {}
+
+      // مزامنة احتياطية مع Firestore
+      try {
+        await firestore.collection('users').doc(user.uid).set(
+          userModel.toMap(),
+          SetOptions(merge: true),
+        );
+      } catch (_) {}
+
+      return userModel;
     } on FirebaseAuthException catch (e) {
       throw AuthException(FirebaseErrorMapper.mapAuthError(e.code));
     } catch (e) {
@@ -72,7 +89,22 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         name: name.trim(),
         isOnline: true,
       );
-      await firestore.collection('users').doc(user.uid).set(userModel.toMap());
+
+      // حفظ بروفايل المستخدم في Supabase فوراً
+      try {
+        await supabaseClient.from('profiles').upsert({
+          'id': user.uid,
+          'name': userModel.name,
+          'email': userModel.email,
+          'is_online': true,
+        });
+      } catch (_) {}
+
+      // حفظ احتياطي في Firestore
+      try {
+        await firestore.collection('users').doc(user.uid).set(userModel.toMap());
+      } catch (_) {}
+
       return userModel;
     } on FirebaseAuthException catch (e) {
       throw AuthException(FirebaseErrorMapper.mapAuthError(e.code));
@@ -87,9 +119,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final currentUid = firebaseAuth.currentUser?.uid;
       if (currentUid != null) {
-        await firestore.collection('users').doc(currentUid).update({
-          'isOnline': false,
-        });
+        try {
+          await supabaseClient
+              .from('profiles')
+              .update({'is_online': false})
+              .eq('id', currentUid);
+        } catch (_) {}
+
+        try {
+          await firestore.collection('users').doc(currentUid).update({
+            'isOnline': false,
+          });
+        } catch (_) {}
       }
       await firebaseAuth.signOut();
     } catch (e) {
@@ -104,7 +145,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     return UserModel(
       uid: user.uid,
       email: user.email ?? '',
-      name: user.displayName ?? '',
+      name: user.displayName ?? user.email?.split('@').first ?? 'User',
       isOnline: true,
     );
   }

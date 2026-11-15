@@ -11,11 +11,11 @@ class UserModel extends UserEntity {
 
   factory UserModel.fromMap(Map<String, dynamic> map, String uid) {
     return UserModel(
-      uid: uid,
-      email: map['email'] as String? ?? '',
-      name: map['name'] as String? ?? '',
-      isOnline: map['isOnline'] as bool? ?? false,
-      fcmToken: map['fcmToken'] as String?,
+      uid: (map['uid'] ?? map['id'] ?? uid).toString(),
+      email: (map['email'] ?? '').toString(),
+      name: (map['name'] ?? '').toString(),
+      isOnline: (map['isOnline'] ?? map['is_online']) as bool? ?? false,
+      fcmToken: (map['fcmToken'] ?? map['fcm_token']) as String?,
     );
   }
 
@@ -26,6 +26,16 @@ class UserModel extends UserEntity {
       'name': name,
       'isOnline': isOnline,
       if (fcmToken != null) 'fcmToken': fcmToken,
+    };
+  }
+
+  Map<String, dynamic> toSupabaseMap() {
+    return {
+      'id': uid,
+      'email': email,
+      'name': name,
+      'is_online': isOnline,
+      if (fcmToken != null) 'fcm_token': fcmToken,
     };
   }
 

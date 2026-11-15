@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core.dart';
 import '../../features.dart';
@@ -35,15 +36,17 @@ class ServiceLocator {
   static void init() {
     final auth = FirebaseAuth.instance;
     final firestore = FirebaseFirestore.instance;
+    final supabase = Supabase.instance.client;
 
     // 0. Notifications DI
     notificationService = NotificationService(firestore: firestore);
     inAppNotificationWatcher = InAppNotificationWatcher(firestore: firestore);
 
-    // 1. Auth Feature DI
+    // 1. Auth Feature DI (Firebase Auth + Supabase Profiles Sync)
     authRemoteDataSource = AuthRemoteDataSourceImpl(
       firebaseAuth: auth,
       firestore: firestore,
+      supabaseClient: supabase,
     );
     authRepository = AuthRepositoryImpl(remoteDataSource: authRemoteDataSource);
     loginUseCase = LoginUseCase(authRepository);
@@ -51,10 +54,10 @@ class ServiceLocator {
     logoutUseCase = LogoutUseCase(authRepository);
     getCurrentUserUseCase = GetCurrentUserUseCase(authRepository);
 
-    // 2. Chat Feature DI
-    chatStorageDataSource = ChatStorageDataSourceImpl();
-    chatRemoteDataSource = ChatRemoteDataSourceImpl(
-      firestore: firestore,
+    // 2. Chat Feature DI (100% Supabase Realtime & PostgreSQL & Storage)
+    chatStorageDataSource = SupabaseChatStorageDataSourceImpl(client: supabase);
+    chatRemoteDataSource = SupabaseChatRemoteDataSourceImpl(
+      client: supabase,
       storageDataSource: chatStorageDataSource,
     );
     chatRepository = ChatRepositoryImpl(remoteDataSource: chatRemoteDataSource);

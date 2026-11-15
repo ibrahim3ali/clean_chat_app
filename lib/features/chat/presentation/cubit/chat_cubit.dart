@@ -70,7 +70,7 @@ class ChatCubit extends Cubit<ChatState> {
     }
   }
 
-  void sendMediaMessage({
+  Future<void> sendMediaMessage({
     required String currentUserId,
     required String currentUserName,
     required String receiverId,
@@ -78,9 +78,10 @@ class ChatCubit extends Cubit<ChatState> {
     required String type,
     String text = '',
     int? duration,
-  }) {
+  }) async {
+    final tempId = 'session_${DateTime.now().millisecondsSinceEpoch}';
     final tempMessage = MessageEntity(
-      id: 'session_${DateTime.now().millisecondsSinceEpoch}',
+      id: tempId,
       senderId: currentUserId,
       senderName: currentUserName,
       receiverId: receiverId,
@@ -93,6 +94,24 @@ class ChatCubit extends Cubit<ChatState> {
 
     _sessionMediaMessages.add(tempMessage);
     _emitCombinedMessages();
+
+    try {
+      await sendMediaMessageUseCase(
+        currentUserId: currentUserId,
+        currentUserName: currentUserName,
+        receiverId: receiverId,
+        file: file,
+        type: type,
+        text: text,
+        duration: duration,
+      );
+      _sessionMediaMessages.removeWhere((m) => m.id == tempId);
+      _emitCombinedMessages();
+    } catch (e) {
+      _sessionMediaMessages.removeWhere((m) => m.id == tempId);
+      _emitCombinedMessages();
+      emit(ChatError(e.toString(), messages: _allCombinedMessages));
+    }
   }
 
   Future<void> deleteMessage({
