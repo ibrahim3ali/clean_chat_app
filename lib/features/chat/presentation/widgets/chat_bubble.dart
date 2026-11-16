@@ -67,32 +67,44 @@ class ChatBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bubbleColor = isMe
-        ? AppColors.sentMessage
-        : (isDark ? AppColors.darkSurfaceVariant : AppColors.receivedMessage);
 
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: GestureDetector(
         onLongPress: onLongPress,
         child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
           constraints: BoxConstraints(
             maxWidth: MediaQuery.of(context).size.width * 0.75,
           ),
           decoration: BoxDecoration(
-            color: bubbleColor,
+            gradient: isMe ? AppColors.sentBubbleGradient : null,
+            color: isMe
+                ? null
+                : (isDark
+                    ? AppColors.darkReceivedMessage
+                    : AppColors.receivedMessage),
+            border: isMe
+                ? null
+                : Border.all(
+                    color: isDark
+                        ? AppColors.darkBorder
+                        : const Color(0xFFE2E8F0),
+                    width: 0.8,
+                  ),
             borderRadius: BorderRadius.only(
-              topLeft: const Radius.circular(16),
-              topRight: const Radius.circular(16),
-              bottomLeft: Radius.circular(isMe ? 16 : 4),
-              bottomRight: Radius.circular(isMe ? 4 : 16),
+              topLeft: const Radius.circular(20),
+              topRight: const Radius.circular(20),
+              bottomLeft: Radius.circular(isMe ? 20 : 4),
+              bottomRight: Radius.circular(isMe ? 4 : 20),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 4,
+                color: isMe
+                    ? const Color(0xFF9333EA).withValues(alpha: 0.25)
+                    : Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+                blurRadius: isMe ? 8 : 4,
                 offset: const Offset(0, 2),
               ),
             ],

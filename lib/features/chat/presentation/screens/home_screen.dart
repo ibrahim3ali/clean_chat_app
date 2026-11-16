@@ -127,15 +127,48 @@ class _HomeScreenState extends State<HomeScreen> {
         floatingActionButton: BlocBuilder<AuthCubit, AuthState>(
           builder: (context, state) {
             if (state is! Authenticated) return const SizedBox.shrink();
-            return FloatingActionButton.extended(
-              onPressed: () => NewChatBottomSheet.show(context, state.user),
-              backgroundColor: AppColors.primary,
-              icon: const Icon(Icons.add_comment_rounded, color: Colors.white),
-              label: Text(
-                context.tr('startNewChat'),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+            return Container(
+              decoration: BoxDecoration(
+                gradient: AppColors.fabGradient,
+                borderRadius: BorderRadius.circular(28),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFFF2E93).withValues(alpha: 0.35),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(28),
+                  onTap: () => NewChatBottomSheet.show(context, state.user),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 14,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.add_comment_rounded,
+                          color: Colors.white,
+                          size: 22,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          context.tr('startNewChat'),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             );

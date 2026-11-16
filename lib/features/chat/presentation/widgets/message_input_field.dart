@@ -231,8 +231,9 @@ class _MessageInputFieldState extends State<MessageInputField> {
                 children: [
                   IconButton(
                     icon: const Icon(
-                      Icons.add_circle_outline,
+                      Icons.add_circle_rounded,
                       color: AppColors.primary,
+                      size: 26,
                     ),
                     onPressed: _openAttachmentPicker,
                   ),
@@ -259,31 +260,42 @@ class _MessageInputFieldState extends State<MessageInputField> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: 6),
                   if (_controller.text.trim().isNotEmpty)
-                    IconButton.filled(
-                      onPressed: _send,
-                      icon: const Icon(Icons.send_rounded, size: 20),
-                      style: IconButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
+                    Container(
+                      decoration: const BoxDecoration(
+                        gradient: AppColors.primaryGradient,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0x66A824FF),
+                            blurRadius: 8,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        onPressed: _send,
+                        icon: const Icon(Icons.send_rounded, size: 20, color: Colors.white),
                       ),
                     )
                   else ...[
                     IconButton(
                       icon: const Icon(
-                        Icons.camera_alt_outlined,
-                        color: AppColors.primary,
+                        Icons.camera_alt_rounded,
+                        color: AppColors.secondary,
                       ),
                       tooltip: context.tr('camera'),
                       onPressed: _openCameraPicker,
                     ),
-                    IconButton.filled(
-                      onPressed: _startVoiceRecording,
-                      icon: const Icon(Icons.mic, size: 20),
-                      style: IconButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
+                    Container(
+                      decoration: const BoxDecoration(
+                        gradient: AppColors.primaryGradient,
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        onPressed: _startVoiceRecording,
+                        icon: const Icon(Icons.mic, size: 20, color: Colors.white),
                       ),
                     ),
                   ],

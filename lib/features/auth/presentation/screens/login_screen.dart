@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core.dart';
 import '../../../../features.dart';
+import '../widgets/gradient_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -62,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
           return SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                padding: const EdgeInsets.symmetric(horizontal: 26.0),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -72,21 +73,21 @@ class _LoginScreenState extends State<LoginScreen> {
                         title: context.tr('loginTitle'),
                         subtitle: context.tr('loginSubtitle'),
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 36),
                       CustomTextField(
                         controller: _emailController,
                         label: context.tr('email'),
-                        prefixIcon: Icons.email_outlined,
+                        prefixIcon: Icons.alternate_email_rounded,
                         keyboardType: TextInputType.emailAddress,
                         validator: (v) => (v == null || !v.contains('@'))
                             ? context.tr('invalidEmail')
                             : null,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 18),
                       CustomTextField(
                         controller: _passwordController,
                         label: context.tr('password'),
-                        prefixIcon: Icons.lock_outline,
+                        prefixIcon: Icons.lock_outline_rounded,
                         isPassword: _obscure,
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -100,28 +101,21 @@ class _LoginScreenState extends State<LoginScreen> {
                             ? context.tr('passwordTooShort')
                             : null,
                       ),
-                      const SizedBox(height: 24),
-                      ElevatedButton(
-                        onPressed: isLoading ? null : _login,
-                        child: isLoading
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Text(context.tr('loginButton')),
+                      const SizedBox(height: 28),
+                      GradientButton(
+                        text: context.tr('loginButton'),
+                        isLoading: isLoading,
+                        onPressed: _login,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
                       TextButton(
                         onPressed: () => context.push(AppRoutes.register),
                         child: Text(
                           context.tr('dontHaveAccount'),
                           style: const TextStyle(
                             color: AppColors.primary,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
                           ),
                         ),
                       ),

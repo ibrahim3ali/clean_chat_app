@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core.dart';
 import '../../../../features.dart';
+import '../widgets/gradient_button.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -64,7 +65,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           return SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
+                padding: const EdgeInsets.symmetric(horizontal: 26.0, vertical: 12),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -74,30 +75,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         title: context.tr('registerTitle'),
                         subtitle: context.tr('registerSubtitle'),
                       ),
-                      const SizedBox(height: 28),
+                      const SizedBox(height: 32),
                       CustomTextField(
                         controller: _nameController,
                         label: context.tr('name'),
-                        prefixIcon: Icons.person_outline,
+                        prefixIcon: Icons.person_outline_rounded,
                         validator: (v) => (v == null || v.trim().isEmpty)
                             ? context.tr('nameRequired')
                             : null,
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 16),
                       CustomTextField(
                         controller: _emailController,
                         label: context.tr('email'),
-                        prefixIcon: Icons.email_outlined,
+                        prefixIcon: Icons.alternate_email_rounded,
                         keyboardType: TextInputType.emailAddress,
                         validator: (v) => (v == null || !v.contains('@'))
                             ? context.tr('invalidEmail')
                             : null,
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 16),
                       CustomTextField(
                         controller: _passwordController,
                         label: context.tr('password'),
-                        prefixIcon: Icons.lock_outline,
+                        prefixIcon: Icons.lock_outline_rounded,
                         isPassword: _obscure,
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -111,28 +112,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ? context.tr('passwordTooShort')
                             : null,
                       ),
-                      const SizedBox(height: 24),
-                      ElevatedButton(
-                        onPressed: isLoading ? null : _register,
-                        child: isLoading
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Text(context.tr('registerButton')),
+                      const SizedBox(height: 28),
+                      GradientButton(
+                        text: context.tr('registerButton'),
+                        isLoading: isLoading,
+                        onPressed: _register,
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 16),
                       TextButton(
                         onPressed: () => context.pop(),
                         child: Text(
                           context.tr('haveAccount'),
                           style: const TextStyle(
                             color: AppColors.primary,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
                           ),
                         ),
                       ),

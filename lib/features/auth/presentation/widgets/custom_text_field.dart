@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/app_colors.dart';
+
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String label;
@@ -24,12 +26,20 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final labelColor =
+        isDark ? AppColors.darkTextPrimary : AppColors.textPrimary;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+            color: labelColor,
+          ),
         ),
         const SizedBox(height: 8),
         TextFormField(
@@ -39,7 +49,11 @@ class CustomTextField extends StatelessWidget {
           validator: validator,
           decoration: InputDecoration(
             hintText: hint ?? label,
-            prefixIcon: Icon(prefixIcon, size: 20),
+            prefixIcon: Icon(
+              prefixIcon,
+              size: 21,
+              color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+            ),
             suffixIcon: suffixIcon,
           ),
         ),
