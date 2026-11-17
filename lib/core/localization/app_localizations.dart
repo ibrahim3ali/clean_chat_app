@@ -75,6 +75,8 @@ class AppLocalizations {
       'clearForEveryone': 'مسح المحادثة للطرفين',
       'messageDeleted': 'تم حذف الرسالة',
       'chatCleared': 'تم مسح المحادثة',
+      'youDeletedThisMessage': 'لقد حذفت أنت هذه الرسالة',
+      'messageDeletedForEveryone': 'تم حذف هذه الرسالة',
     },
     'en': {
       'appTitle': 'Clean Chat',
@@ -137,6 +139,8 @@ class AppLocalizations {
       'clearForEveryone': 'Clear for everyone',
       'messageDeleted': 'Message deleted',
       'chatCleared': 'Chat cleared',
+      'youDeletedThisMessage': 'You deleted this message',
+      'messageDeletedForEveryone': 'This message was deleted',
     },
   };
 

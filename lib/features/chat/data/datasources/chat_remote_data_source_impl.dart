@@ -152,7 +152,13 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           .doc(messageId);
 
       if (deleteForEveryone) {
-        await docRef.delete();
+        await docRef.set({
+          'type': 'deleted',
+          'text': '',
+          'mediaUrl': null,
+          'mediaDuration': null,
+          'deletedFor': [],
+        }, SetOptions(merge: true));
       } else {
         await docRef.set({
           'deletedFor': FieldValue.arrayUnion([currentUserId]),
@@ -227,9 +233,15 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         final type = data['type'] as String? ?? 'text';
         final text = data['text'] as String? ?? '';
         String preview = text.trim();
-        if (type == 'image') preview = preview.isNotEmpty ? preview : '📷 صورة';
-        if (type == 'video') preview = preview.isNotEmpty ? preview : '🎥 فيديو';
-        if (type == 'audio') preview = '🎤 تسجيل صوتي';
+        if (type == 'deleted') {
+          preview = '🚫 تم حذف هذه الرسالة';
+        } else if (type == 'image') {
+          preview = preview.isNotEmpty ? preview : '📷 صورة';
+        } else if (type == 'video') {
+          preview = preview.isNotEmpty ? preview : '🎥 فيديو';
+        } else if (type == 'audio') {
+          preview = '🎤 تسجيل صوتي';
+        }
 
         await chatDoc.update({
           'lastMessage': preview,

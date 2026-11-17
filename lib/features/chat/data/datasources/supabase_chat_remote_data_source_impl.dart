@@ -151,7 +151,16 @@ class SupabaseChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   }) async {
     try {
       if (deleteForEveryone) {
-        await client.from('messages').delete().eq('id', messageId);
+        await client
+            .from('messages')
+            .update({
+              'type': 'deleted',
+              'text': '',
+              'media_url': null,
+              'media_duration': null,
+              'deleted_for': [],
+            })
+            .eq('id', messageId);
       } else {
         final existing = await client
             .from('messages')
@@ -183,6 +192,19 @@ class SupabaseChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   }) async {
     try {
       if (deleteForEveryone) {
+        final participants = chatId.split('_');
+        final allDeletedFor = ['everyone', ...participants];
+
+        try {
+          await client
+              .from('messages')
+              .update({
+                'deleted_for': allDeletedFor,
+                'media_url': null,
+                'text': '',
+              })
+              .eq('chat_id', chatId);
+        } catch (_) {}
         await client.from('messages').delete().eq('chat_id', chatId);
         await client.from('chats').update({'last_message': ''}).eq('id', chatId);
       } else {
@@ -222,9 +244,15 @@ class SupabaseChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         final type = row['type'] as String? ?? 'text';
         final text = row['text'] as String? ?? '';
         String preview = text.trim();
-        if (type == 'image') preview = preview.isNotEmpty ? preview : '📷 صورة';
-        if (type == 'video') preview = preview.isNotEmpty ? preview : '🎥 فيديو';
-        if (type == 'audio') preview = '🎤 تسجيل صوتي';
+        if (type == 'deleted') {
+          preview = '🚫 تم حذف هذه الرسالة';
+        } else if (type == 'image') {
+          preview = preview.isNotEmpty ? preview : '📷 صورة';
+        } else if (type == 'video') {
+          preview = preview.isNotEmpty ? preview : '🎥 فيديو';
+        } else if (type == 'audio') {
+          preview = '🎤 تسجيل صوتي';
+        }
 
         await client.from('chats').update({
           'last_message': preview,

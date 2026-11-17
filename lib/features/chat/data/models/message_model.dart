@@ -54,6 +54,33 @@ class MessageModel extends MessageEntity {
     return MessageModel.fromMap(data, doc.id);
   }
 
+  @override
+  MessageModel copyWith({
+    String? id,
+    String? senderId,
+    String? senderName,
+    String? receiverId,
+    String? text,
+    String? type,
+    String? mediaUrl,
+    int? mediaDuration,
+    DateTime? timestamp,
+    List<String>? deletedFor,
+  }) {
+    return MessageModel(
+      id: id ?? this.id,
+      senderId: senderId ?? this.senderId,
+      senderName: senderName ?? this.senderName,
+      receiverId: receiverId ?? this.receiverId,
+      text: text ?? this.text,
+      type: type ?? this.type,
+      mediaUrl: mediaUrl ?? this.mediaUrl,
+      mediaDuration: mediaDuration ?? this.mediaDuration,
+      timestamp: timestamp ?? this.timestamp,
+      deletedFor: deletedFor ?? this.deletedFor,
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'senderId': senderId,

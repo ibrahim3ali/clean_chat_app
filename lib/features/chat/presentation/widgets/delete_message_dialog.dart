@@ -4,22 +4,29 @@ import '../../../../core.dart';
 
 class DeleteMessageDialog extends StatelessWidget {
   final bool isMe;
+  final bool isDeleted;
   final Function(bool deleteForEveryone) onDelete;
 
   const DeleteMessageDialog({
     super.key,
     required this.isMe,
+    this.isDeleted = false,
     required this.onDelete,
   });
 
   static Future<void> show(
     BuildContext context, {
     required bool isMe,
+    bool isDeleted = false,
     required Function(bool deleteForEveryone) onDelete,
   }) {
     return showDialog(
       context: context,
-      builder: (_) => DeleteMessageDialog(isMe: isMe, onDelete: onDelete),
+      builder: (_) => DeleteMessageDialog(
+        isMe: isMe,
+        isDeleted: isDeleted,
+        onDelete: onDelete,
+      ),
     );
   }
 
@@ -41,7 +48,7 @@ class DeleteMessageDialog extends StatelessWidget {
       actionsAlignment: MainAxisAlignment.end,
       actionsOverflowDirection: VerticalDirection.down,
       actions: [
-        if (isMe)
+        if (isMe && !isDeleted)
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();

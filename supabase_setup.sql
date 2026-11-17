@@ -87,3 +87,8 @@ create policy "Allow all on storage"
   on storage.objects for all
   using (bucket_id = 'chat_media')
   with check (bucket_id = 'chat_media');
+
+-- 8. تفعيل REPLICA IDENTITY FULL لضمان استقبال أحداث الحذف (DELETE) مع الفلاتر في Realtime
+alter table public.messages replica identity full;
+alter table public.chats replica identity full;
+alter table public.profiles replica identity full;

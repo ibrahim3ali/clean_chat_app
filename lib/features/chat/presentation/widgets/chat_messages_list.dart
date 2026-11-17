@@ -24,12 +24,14 @@ class ChatMessagesList extends StatelessWidget {
         final message = messages[index];
         final isMe = message.senderId == currentUserId;
         return ChatBubble(
+          key: ValueKey(message.id),
           message: message,
           isMe: isMe,
           onLongPress: () {
             DeleteMessageDialog.show(
               context,
               isMe: isMe,
+              isDeleted: message.isDeleted,
               onDelete: (deleteForEveryone) {
                 onDeleteMessage(message, deleteForEveryone);
               },

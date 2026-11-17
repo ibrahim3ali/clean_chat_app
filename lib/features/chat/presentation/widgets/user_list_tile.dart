@@ -24,10 +24,13 @@ class UserListTile extends StatelessWidget {
         isDark ? AppColors.darkTextPrimary : AppColors.textPrimary;
     final hasMessage = conversation.lastMessage.isNotEmpty;
     final isMe = conversation.lastSenderId == currentUserId;
+    final isDeletedMessage = conversation.lastMessage.contains('🚫');
     final subtitle = hasMessage
-        ? (isMe
-              ? '${context.tr('you')}: ${conversation.lastMessage}'
-              : conversation.lastMessage)
+        ? (isDeletedMessage
+            ? conversation.lastMessage
+            : (isMe
+                ? '${context.tr('you')}: ${conversation.lastMessage}'
+                : conversation.lastMessage))
         : context.tr('noMessagesTap');
     final subtitleColor = hasMessage
         ? (isDark ? AppColors.darkTextSecondary : AppColors.textSecondary)
@@ -110,6 +113,9 @@ class UserListTile extends StatelessWidget {
                           fontSize: 13,
                           fontWeight:
                               hasMessage ? FontWeight.w500 : FontWeight.normal,
+                          fontStyle: isDeletedMessage
+                              ? FontStyle.italic
+                              : FontStyle.normal,
                           color: subtitleColor,
                         ),
                       ),

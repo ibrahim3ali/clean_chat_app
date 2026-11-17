@@ -43,7 +43,7 @@ class ChatCubit extends Cubit<ChatState> {
       otherUserId: otherUserId,
     ).listen(
       (messages) {
-        _lastFirestoreMessages = messages;
+        _lastFirestoreMessages = List<MessageEntity>.from(messages);
         _emitCombinedMessages();
       },
       onError: (e) {
@@ -122,6 +122,22 @@ class ChatCubit extends Cubit<ChatState> {
   }) async {
     try {
       _sessionMediaMessages.removeWhere((m) => m.id == messageId);
+      if (deleteForEveryone) {
+        final index =
+            _lastFirestoreMessages.indexWhere((m) => m.id == messageId);
+        if (index != -1) {
+          final old = _lastFirestoreMessages[index];
+          _lastFirestoreMessages[index] = old.copyWith(
+            type: 'deleted',
+            text: '',
+            mediaUrl: null,
+            mediaDuration: null,
+            deletedFor: [],
+          );
+        }
+      } else {
+        _lastFirestoreMessages.removeWhere((m) => m.id == messageId);
+      }
       _emitCombinedMessages();
       await deleteMessageUseCase(
         chatId: chatId,
@@ -141,6 +157,7 @@ class ChatCubit extends Cubit<ChatState> {
   }) async {
     try {
       _sessionMediaMessages.clear();
+      _lastFirestoreMessages.clear();
       _emitCombinedMessages();
       await clearChatUseCase(
         chatId: chatId,

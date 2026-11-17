@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/utils/date_formatter.dart';
+import '../../../../core.dart';
 import '../../domain/entities/message_entity.dart';
 import 'chat_audio_bubble.dart';
 import 'chat_image_bubble.dart';
@@ -19,7 +18,52 @@ class ChatBubble extends StatelessWidget {
     this.onLongPress,
   });
 
+  Widget _buildDeletedMessageContent(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isMe
+        ? Colors.white.withValues(alpha: 0.75)
+        : (isDark ? Colors.white60 : Colors.black45);
+    final text = isMe
+        ? context.tr('youDeletedThisMessage')
+        : context.tr('messageDeletedForEveryone');
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.block_flipped,
+          size: 16,
+          color: textColor,
+        ),
+        const SizedBox(width: 6),
+        Flexible(
+          child: Text(
+            text,
+            style: TextStyle(
+              color: textColor,
+              fontSize: 14.5,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Text(
+          DateFormatter.formatTime(message.timestamp),
+          style: TextStyle(
+            color: textColor.withValues(alpha: 0.8),
+            fontSize: 11,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildContent(BuildContext context) {
+    if (message.isDeleted) {
+      return _buildDeletedMessageContent(context);
+    }
     if (message.isImage) {
       return ChatImageBubble(message: message, isMe: isMe);
     }
