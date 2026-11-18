@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'firebase_options.dart';
 import 'core/constants/supabase_constants.dart';
 import 'core/di/injection_container.dart';
 import 'core/localization/app_localizations.dart';
@@ -15,12 +14,12 @@ import 'core/theme/theme_cubit.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/chat/presentation/cubit/chat_cubit.dart';
 import 'features/chat/presentation/cubit/users_cubit.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // ignore: deprecated_member_use
   await Supabase.initialize(
     url: SupabaseConstants.supabaseUrl,
     // ignore: deprecated_member_use
