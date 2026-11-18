@@ -44,8 +44,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       appBar: AppBar(
         title: Text(context.tr('registerTitle')),
         actions: const [
-          ThemeToggleButton(),
-          LanguageToggleButton(),
+          SettingsButton(isAuthScreen: true),
         ],
       ),
       body: BlocConsumer<AuthCubit, AuthState>(

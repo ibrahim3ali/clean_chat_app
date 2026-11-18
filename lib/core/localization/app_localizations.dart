@@ -77,6 +77,11 @@ class AppLocalizations {
       'chatCleared': 'تم مسح المحادثة',
       'youDeletedThisMessage': 'لقد حذفت أنت هذه الرسالة',
       'messageDeletedForEveryone': 'تم حذف هذه الرسالة',
+      'settings': 'الإعدادات',
+      'language': 'اللغة',
+      'arabic': 'العربية',
+      'english': 'English',
+      'theme': 'المظهر',
     },
     'en': {
       'appTitle': 'Clean Chat',
@@ -141,6 +146,11 @@ class AppLocalizations {
       'chatCleared': 'Chat cleared',
       'youDeletedThisMessage': 'You deleted this message',
       'messageDeletedForEveryone': 'This message was deleted',
+      'settings': 'Settings',
+      'language': 'Language',
+      'arabic': 'Arabic',
+      'english': 'English',
+      'theme': 'Theme',
     },
   };
 

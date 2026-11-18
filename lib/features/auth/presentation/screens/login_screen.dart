@@ -42,8 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: const [
-          ThemeToggleButton(),
-          LanguageToggleButton(),
+          SettingsButton(isAuthScreen: true),
         ],
       ),
       body: BlocConsumer<AuthCubit, AuthState>(

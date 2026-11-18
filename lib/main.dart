@@ -31,7 +31,7 @@ void main() async {
 
   runApp(const CleanChatApp());
 }
-
+ 
 class CleanChatApp extends StatelessWidget {
   const CleanChatApp({super.key});
 

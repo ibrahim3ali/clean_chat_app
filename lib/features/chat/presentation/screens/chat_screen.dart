@@ -99,7 +99,6 @@ class _ChatScreenState extends State<ChatScreen> {
             typingStream: _typingStream,
           ),
           actions: [
-            const ThemeToggleButton(),
             PopupMenuButton<String>(
               icon: const Icon(Icons.more_vert_rounded),
               shape: RoundedRectangleBorder(
@@ -117,6 +116,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       );
                     },
                   );
+                } else if (value == 'settings') {
+                  SettingsBottomSheet.show(context);
                 }
               },
               itemBuilder: (context) => [
@@ -134,6 +135,22 @@ class _ChatScreenState extends State<ChatScreen> {
                         context.tr('clearChat'),
                         style: const TextStyle(color: AppColors.error),
                       ),
+                    ],
+                  ),
+                ),
+                PopupMenuItem<String>(
+                  value: 'settings',
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.settings_outlined,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.darkTextPrimary
+                            : AppColors.textPrimary,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(context.tr('settings')),
                     ],
                   ),
                 ),

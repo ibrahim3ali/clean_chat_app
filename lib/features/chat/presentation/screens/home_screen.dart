@@ -37,17 +37,8 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(context.tr('homeTitle')),
-          actions: [
-            const ThemeToggleButton(),
-            const LanguageToggleButton(),
-            IconButton(
-              icon: const Icon(Icons.logout_rounded),
-              tooltip: context.tr('logout'),
-              onPressed: () => LogoutDialog.show(
-                context,
-                onConfirm: () => context.read<AuthCubit>().logout(),
-              ),
-            ),
+          actions: const [
+            SettingsButton(),
           ],
         ),
         body: BlocBuilder<AuthCubit, AuthState>(

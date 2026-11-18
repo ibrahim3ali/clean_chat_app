@@ -7,3 +7,4 @@ export 'core/routes.dart';
 export 'core/services.dart';
 export 'core/theme.dart';
 export 'core/utils.dart';
+export 'core/widgets.dart';
