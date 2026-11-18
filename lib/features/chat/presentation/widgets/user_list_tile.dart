@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core.dart';
 import '../../../../features.dart';
@@ -61,10 +62,26 @@ class UserListTile extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             child: Row(
               children: [
-                ChatUserAvatar(
-                  name: conversation.otherUserName,
-                  isOnline: conversation.isOnline,
-                  radius: 26,
+                GestureDetector(
+                  onTap: () {
+                    context.push(
+                      AppRoutes.profile,
+                      extra: ProfileRouteExtra(
+                        user: conversation.toUserEntity(),
+                        isCurrentUser: false,
+                        currentUser: UserEntity(
+                          uid: currentUserId,
+                          name: '',
+                          email: '',
+                        ),
+                      ),
+                    );
+                  },
+                  child: ChatUserAvatar(
+                    name: conversation.otherUserName,
+                    isOnline: conversation.isOnline,
+                    radius: 26,
+                  ),
                 ),
                 const SizedBox(width: 14),
                 Expanded(

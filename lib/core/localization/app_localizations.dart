@@ -82,6 +82,12 @@ class AppLocalizations {
       'arabic': 'العربية',
       'english': 'English',
       'theme': 'المظهر',
+      'profile': 'الملف الشخصي',
+      'contactInfo': 'معلومات جهة الاتصال',
+      'userId': 'معرف المستخدم',
+      'copiedToClipboard': 'تم النسخ إلى الحافظة',
+      'sendMessage': 'مراسلة',
+      'accountInfo': 'معلومات الحساب',
     },
     'en': {
       'appTitle': 'Clean Chat',
@@ -151,6 +157,12 @@ class AppLocalizations {
       'arabic': 'Arabic',
       'english': 'English',
       'theme': 'Theme',
+      'profile': 'Profile',
+      'contactInfo': 'Contact Info',
+      'userId': 'User ID',
+      'copiedToClipboard': 'Copied to clipboard',
+      'sendMessage': 'Message',
+      'accountInfo': 'Account Info',
     },
   };
 

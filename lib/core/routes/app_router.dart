@@ -34,6 +34,17 @@ class AppRouter {
           );
         },
       ),
+      GoRoute(
+        path: AppRoutes.profile,
+        builder: (context, state) {
+          final extra = state.extra as ProfileRouteExtra;
+          return UserProfileScreen(
+            user: extra.user,
+            isCurrentUser: extra.isCurrentUser,
+            currentUser: extra.currentUser,
+          );
+        },
+      ),
     ],
   );
 }

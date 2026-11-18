@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core.dart';
 import '../../../../features.dart';
@@ -94,9 +95,25 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Scaffold(
         appBar: AppBar(
           titleSpacing: 0,
-          title: ChatAppBarTitle(
-            otherUser: widget.otherUser,
-            typingStream: _typingStream,
+          title: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: () {
+              context.push(
+                AppRoutes.profile,
+                extra: ProfileRouteExtra(
+                  user: widget.otherUser,
+                  isCurrentUser: false,
+                  currentUser: widget.currentUser,
+                ),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+              child: ChatAppBarTitle(
+                otherUser: widget.otherUser,
+                typingStream: _typingStream,
+              ),
+            ),
           ),
           actions: [
             PopupMenuButton<String>(
@@ -105,7 +122,16 @@ class _ChatScreenState extends State<ChatScreen> {
                 borderRadius: BorderRadius.circular(16),
               ),
               onSelected: (value) {
-                if (value == 'clear') {
+                if (value == 'profile') {
+                  context.push(
+                    AppRoutes.profile,
+                    extra: ProfileRouteExtra(
+                      user: widget.otherUser,
+                      isCurrentUser: false,
+                      currentUser: widget.currentUser,
+                    ),
+                  );
+                } else if (value == 'clear') {
                   ClearChatDialog.show(
                     context,
                     onClear: (deleteForEveryone) {
@@ -121,6 +147,22 @@ class _ChatScreenState extends State<ChatScreen> {
                 }
               },
               itemBuilder: (context) => [
+                PopupMenuItem<String>(
+                  value: 'profile',
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.person_outline_rounded,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.darkTextPrimary
+                            : AppColors.textPrimary,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(context.tr('contactInfo')),
+                    ],
+                  ),
+                ),
                 PopupMenuItem<String>(
                   value: 'clear',
                   child: Row(

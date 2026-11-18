@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core.dart';
-import '../../features/auth/presentation/cubit/auth_cubit.dart';
-import '../../features/chat/presentation/widgets/logout_dialog.dart';
+import '../../features.dart';
 
 class SettingsBottomSheet extends StatelessWidget {
   final bool isAuthScreen;
@@ -106,7 +106,103 @@ class SettingsBottomSheet extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
+
+              // Profile Card (Sender / Current User)
+              if (!isAuthScreen) ...[
+                BlocBuilder<AuthCubit, AuthState>(
+                  builder: (context, authState) {
+                    if (authState is Authenticated) {
+                      return InkWell(
+                        borderRadius: BorderRadius.circular(16),
+                        onTap: () {
+                          Navigator.pop(context);
+                          context.push(
+                            AppRoutes.profile,
+                            extra: ProfileRouteExtra(
+                              user: authState.user,
+                              isCurrentUser: true,
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? AppColors.darkBackground
+                                : const Color(0xFFF1F5F9),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: isDark
+                                  ? AppColors.darkBorder
+                                  : const Color(0xFFE2E8F0),
+                              width: 0.8,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 22,
+                                backgroundColor: AppColors.primary,
+                                child: Text(
+                                  authState.user.name.isNotEmpty
+                                      ? authState.user.name.characters.first
+                                          .toUpperCase()
+                                      : 'U',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      authState.user.name,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        color: isDark
+                                            ? AppColors.darkTextPrimary
+                                            : AppColors.textPrimary,
+                                      ),
+                                    ),
+                                    Text(
+                                      context.tr('profile'),
+                                      style: TextStyle(
+                                        fontSize: 12.5,
+                                        color: isDark
+                                            ? AppColors.darkTextSecondary
+                                            : AppColors.textSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                size: 14,
+                                color: isDark
+                                    ? AppColors.darkTextMuted
+                                    : AppColors.textMuted,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+                const SizedBox(height: 18),
+              ],
 
               // 3. Theme Section
               _buildSectionTitle(

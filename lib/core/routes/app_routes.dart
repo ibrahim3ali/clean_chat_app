@@ -7,6 +7,19 @@ class AppRoutes {
   static const String register = '/register';
   static const String home = '/home';
   static const String chat = '/chat';
+  static const String profile = '/profile';
+}
+
+class ProfileRouteExtra {
+  final UserEntity user;
+  final bool isCurrentUser;
+  final UserEntity? currentUser;
+
+  const ProfileRouteExtra({
+    required this.user,
+    required this.isCurrentUser,
+    this.currentUser,
+  });
 }
 
 class ChatRouteExtra {
